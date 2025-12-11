@@ -433,6 +433,167 @@
             font-weight: bold;
         }
 
+        /* ===== PASS MANAGEMENT SYSTEM ===== */
+        /* Pass Generation Styles */
+        .pass-reference {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+            margin: 20px 0;
+        }
+        .pass-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .pass-pending { background: #FFF9C4; color: #F57F17; }
+        .pass-approved { background: #C8E6C9; color: #2E7D32; }
+        .pass-active { background: #B3E5FC; color: #01579B; }
+        .pass-expired { background: #FFCDD2; color: #C62828; }
+
+        /* Secret Admin Panel Styles */
+        .secret-admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 9999;
+            display: none;
+            overflow-y: auto;
+        }
+        .admin-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+        .admin-stat {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Template Builder Styles */
+        .template-builder {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        .component-palette {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .draggable-component {
+            background: #F5F5F5;
+            border: 2px dashed #E0E0E0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        .draggable-component:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .canvas-area {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 500px;
+            border: 2px solid #E0E0E0;
+            position: relative;
+        }
+        .canvas-area.dragover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+        .properties-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        /* Pass Card Preview Styles */
+        .pass-card-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .pass-card-preview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        .pass-qr {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        /* Pass Modal Styles */
+        .pass-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 8000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .pass-modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .stages { flex-direction: column; }
@@ -539,6 +700,373 @@
     <div class="ai-processing-spinner"></div>
     <h5 id="aiProcessingText">AI is processing...</h5>
     <p id="aiProcessingSubtext" class="text-muted mb-0">This may take a few moments</p>
+</div>
+
+<!-- ===== PASS MANAGEMENT SYSTEM ===== -->
+
+<!-- Pass Generation Modal -->
+<div id="passGenerationModal" class="pass-modal">
+    <div class="pass-modal-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>🎫 Generate Candidate Pass</h3>
+            <button class="btn btn-sm btn-secondary" onclick="closePassModal()">✕</button>
+        </div>
+
+        <div id="passForm">
+            <div class="mb-3">
+                <label class="form-label"><strong>Pass Type:</strong></label>
+                <select class="form-select" id="passType">
+                    <option value="screening">Screening Pass</option>
+                    <option value="candidate">Candidate Pass</option>
+                    <option value="onboarding">Onboarding Pass</option>
+                    <option value="interview">Interview Pass</option>
+                    <option value="assessment">Assessment Pass</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Candidate:</strong></label>
+                <input type="text" class="form-control" id="passCandidate" placeholder="Enter candidate name" value="Nafees Ahamed K">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Position:</strong></label>
+                <input type="text" class="form-control" id="passPosition" value="Electronics Engineer (REQ-2025-EE-001)">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Valid Until:</strong></label>
+                <input type="date" class="form-control" id="passExpiry" value="2025-12-31">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Access Level:</strong></label>
+                <select class="form-select" id="passAccessLevel">
+                    <option value="basic">Basic (Forms Only)</option>
+                    <option value="standard">Standard (Forms + Assessments)</option>
+                    <option value="full">Full (All Resources)</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Auto-Actions:</strong></label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoEmail" checked>
+                    <label class="form-check-label" for="autoEmail">Send pass via email</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoNotify" checked>
+                    <label class="form-check-label" for="autoNotify">Notify candidate via SMS</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoTrack">
+                    <label class="form-check-label" for="autoTrack">Enable activity tracking</label>
+                </div>
+            </div>
+
+            <button class="btn btn-success w-100 py-3" onclick="generatePass()">
+                🎫 Generate Pass
+            </button>
+        </div>
+
+        <!-- Pass Generated Success View -->
+        <div id="passGenerated" style="display:none;">
+            <div class="text-center mb-4">
+                <h4>✅ Pass Generated Successfully!</h4>
+                <p class="text-muted">Pass has been created and sent to candidate</p>
+            </div>
+
+            <div class="pass-reference" id="generatedPassReference">
+                PASS-2025-SCR-001234
+            </div>
+
+            <div class="alert alert-info">
+                <strong>🔒 Security Notice:</strong> This is the ONLY reference you'll see. The actual pass URL is hidden for security. The candidate will receive their unique access link via email.
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-6">
+                    <strong>Status:</strong><br>
+                    <span class="pass-status pass-active" id="passStatusDisplay">ACTIVE</span>
+                </div>
+                <div class="col-6">
+                    <strong>Expires:</strong><br>
+                    <span id="passExpiryDisplay">Dec 31, 2025</span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <strong>Pass Includes:</strong>
+                <ul>
+                    <li>✓ Candidate Information Form</li>
+                    <li>✓ Soft Skills Assessment</li>
+                    <li>✓ Technical Assessment</li>
+                    <li>✓ Document Upload Portal</li>
+                    <li>✓ Progress Tracker</li>
+                </ul>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-primary flex-fill" onclick="viewPassDetails()">
+                    📊 View Details
+                </button>
+                <button class="btn btn-secondary flex-fill" onclick="copyPassReference()">
+                    📋 Copy Reference
+                </button>
+                <button class="btn btn-success flex-fill" onclick="closePassModal(); showToast('✓ Pass ready to use')">
+                    Done
+                </button>
+            </div>
+
+            <div class="mt-3">
+                <button class="btn btn-outline-primary w-100" onclick="resetPassForm()">
+                    ➕ Generate Another Pass
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secret Admin Control Panel (Hidden - Accessible via Ctrl+Shift+Alt+A) -->
+<div id="secretAdminPanel" class="secret-admin-panel">
+    <div class="admin-header">
+        <div>
+            <h2>🔐 ADMIN CONTROL CENTER</h2>
+            <p class="mb-0">Full system control and monitoring</p>
+        </div>
+        <button class="btn btn-danger" onclick="closeAdminPanel()">✕ Exit</button>
+    </div>
+
+    <div class="admin-dashboard">
+        <!-- System Stats -->
+        <div class="admin-card">
+            <h5>📊 System Statistics</h5>
+            <div class="admin-stat">1,247</div>
+            <p class="mb-0">Total Passes Generated</p>
+            <hr>
+            <div class="row mt-3">
+                <div class="col-6">
+                    <strong>Active:</strong> 342
+                </div>
+                <div class="col-6">
+                    <strong>Expired:</strong> 905
+                </div>
+            </div>
+        </div>
+
+        <!-- Pass Management -->
+        <div class="admin-card">
+            <h5>🎫 Pass Management</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" onclick="openTemplateBuilder()">
+                    🎨 Template Builder
+                </button>
+                <button class="btn btn-primary" onclick="viewAllPasses()">
+                    📋 View All Passes
+                </button>
+                <button class="btn btn-primary" onclick="viewPassAnalytics()">
+                    📈 Analytics Dashboard
+                </button>
+                <button class="btn btn-warning" onclick="bulkPassActions()">
+                    ⚡ Bulk Operations
+                </button>
+            </div>
+        </div>
+
+        <!-- Database Control -->
+        <div class="admin-card">
+            <h5>🗄️ Database Control</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-primary" onclick="viewCandidateDB()">
+                    View Candidate DB
+                </button>
+                <button class="btn btn-outline-primary" onclick="viewPassDB()">
+                    View Pass DB
+                </button>
+                <button class="btn btn-outline-primary" onclick="viewTemplateDB()">
+                    View Template DB
+                </button>
+                <button class="btn btn-outline-success" onclick="backupDatabase()">
+                    💾 Backup Database
+                </button>
+            </div>
+        </div>
+
+        <!-- Workflow Control -->
+        <div class="admin-card">
+            <h5>⚙️ Workflow Control</h5>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="autoApprove" checked>
+                <label class="form-check-label" for="autoApprove">Auto-Approve Passes</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="requireManagerApproval">
+                <label class="form-check-label" for="requireManagerApproval">Require Manager Approval</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="autoExpire" checked>
+                <label class="form-check-label" for="autoExpire">Auto-Expire After Deadline</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="trackActivity" checked>
+                <label class="form-check-label" for="trackActivity">Track Pass Activity</label>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="admin-card">
+            <h5>🔔 Recent Activity</h5>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">2 minutes ago</small><br>
+                    <strong>Pass Generated:</strong> PASS-2025-SCR-001234<br>
+                    <span class="text-muted">Nafees Ahamed K</span>
+                </div>
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">15 minutes ago</small><br>
+                    <strong>Pass Accessed:</strong> PASS-2025-SCR-001230<br>
+                    <span class="text-muted">Sarah Johnson</span>
+                </div>
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">1 hour ago</small><br>
+                    <strong>Pass Completed:</strong> PASS-2025-SCR-001228<br>
+                    <span class="text-muted">Ahmed Al-Rashid</span>
+                </div>
+            </div>
+        </div>
+
+        /* Security & Access */
+        <div class="admin-card">
+            <h5>🔐 Security & Access</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-danger" onclick="revokePass()">
+                    🚫 Revoke Pass
+                </button>
+                <button class="btn btn-outline-danger" onclick="blockIP()">
+                    🔒 Block IP Address
+                </button>
+                <button class="btn btn-outline-warning" onclick="viewAccessLogs()">
+                    📜 View Access Logs
+                </button>
+                <button class="btn btn-outline-info" onclick="generateSecurityReport()">
+                    📊 Security Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template Builder Modal -->
+<div id="templateBuilderModal" class="pass-modal">
+    <div class="pass-modal-content" style="max-width: 95%; max-height: 95vh; overflow: hidden;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>🎨 Smart Template Builder</h3>
+            <button class="btn btn-sm btn-secondary" onclick="closeTemplateBuilder()">✕ Close</button>
+        </div>
+
+        <div class="template-builder">
+            <!-- Component Palette -->
+            <div class="component-palette">
+                <h6 class="mb-3">📦 Components</h6>
+                <div class="draggable-component" draggable="true" data-component="text">
+                    📝 Text Field
+                </div>
+                <div class="draggable-component" draggable="true" data-component="photo">
+                    📷 Photo
+                </div>
+                <div class="draggable-component" draggable="true" data-component="qr">
+                    📱 QR Code
+                </div>
+                <div class="draggable-component" draggable="true" data-component="barcode">
+                    🔖 Barcode
+                </div>
+                <div class="draggable-component" draggable="true" data-component="logo">
+                    🏢 Company Logo
+                </div>
+                <div class="draggable-component" draggable="true" data-component="signature">
+                    ✍️ Signature
+                </div>
+                <div class="draggable-component" draggable="true" data-component="expiry">
+                    ⏰ Expiry Date
+                </div>
+                <div class="draggable-component" draggable="true" data-component="status">
+                    🟢 Status Badge
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="canvas-area" id="templateCanvas" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h5 class="text-center text-muted">Drag components here to build your pass template</h5>
+                <div class="pass-card-preview mt-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h4>SCREENING PASS</h4>
+                            <p class="mb-0">Electronics Engineer</p>
+                        </div>
+                        <div class="pass-qr">
+                            <div style="width: 80px; height: 80px; background: #000;">QR</div>
+                        </div>
+                    </div>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-1"><small>Candidate Name:</small></p>
+                            <p class="mb-3"><strong>[AUTO-POPULATED]</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1"><small>Reference:</small></p>
+                            <p class="mb-3"><strong>[AUTO-GENERATED]</strong></p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="mb-1"><small>Valid Until:</small></p>
+                        <p><strong>[EXPIRY-DATE]</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Panel -->
+            <div class="properties-panel">
+                <h6 class="mb-3">⚙️ Properties</h6>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Template Name:</strong></label>
+                    <input type="text" class="form-control" value="Screening Pass - Default">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Pass Type:</strong></label>
+                    <select class="form-select">
+                        <option>Screening Pass</option>
+                        <option>Candidate Pass</option>
+                        <option>Onboarding Pass</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Color Scheme:</strong></label>
+                    <input type="color" class="form-control" value="#667eea">
+                </div>
+                <hr>
+                <h6 class="mb-3">📊 Smart Fields</h6>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Auto-populate from candidate DB</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Generate unique QR code</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Include expiry countdown</label>
+                </div>
+                <hr>
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-success">💾 Save Template</button>
+                    <button class="btn btn-primary">👁️ Preview</button>
+                    <button class="btn btn-secondary">📤 Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Keyboard Shortcuts Hint -->
@@ -692,6 +1220,13 @@
                 </button>
                 <button class="btn btn-secondary" onclick="quickPreview(1)">
                     👁️ Preview
+                </button>
+            </div>
+
+            <!-- PASS GENERATION BUTTON -->
+            <div class="mt-3">
+                <button class="btn btn-primary w-100" onclick="openPassModal(1)" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
+                    🎫 Generate Screening Pass
                 </button>
             </div>
 
@@ -1766,6 +2301,285 @@ function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     showToast('🌙 Dark mode toggled');
 }
+
+// ===== PASS MANAGEMENT SYSTEM =====
+let passDatabase = [];
+let passCounter = 1234;
+
+// Generate unique pass reference
+function generatePassReference(type) {
+    const year = new Date().getFullYear();
+    const typeCode = {
+        'screening': 'SCR',
+        'candidate': 'CAN',
+        'onboarding': 'ONB',
+        'interview': 'INT',
+        'assessment': 'ASS'
+    }[type] || 'GEN';
+
+    passCounter++;
+    return `PASS-${year}-${typeCode}-${String(passCounter).padStart(6, '0')}`;
+}
+
+// Open Pass Generation Modal
+function openPassModal(candidateId = null) {
+    document.getElementById('passGenerationModal').style.display = 'flex';
+
+    // Pre-fill if called from candidate card
+    if (candidateId) {
+        // Auto-populate from candidate data
+        document.getElementById('passCandidate').value = 'Nafees Ahamed K';
+        document.getElementById('passPosition').value = 'Electronics Engineer (REQ-2025-EE-001)';
+    }
+}
+
+// Close Pass Modal
+function closePassModal() {
+    document.getElementById('passGenerationModal').style.display = 'none';
+    resetPassForm();
+}
+
+// Generate Pass
+function generatePass() {
+    const passType = document.getElementById('passType').value;
+    const candidate = document.getElementById('passCandidate').value;
+    const position = document.getElementById('passPosition').value;
+    const expiry = document.getElementById('passExpiry').value;
+    const accessLevel = document.getElementById('passAccessLevel').value;
+
+    // Generate unique reference
+    const passReference = generatePassReference(passType);
+
+    // Generate hidden backend URL (never shown to user)
+    const backendURL = `https://secure.hrpass.internal/${btoa(passReference)}/${Date.now()}`;
+
+    // Create pass object
+    const passObj = {
+        reference: passReference,
+        backendURL: backendURL, // Hidden from user!
+        type: passType,
+        candidate: candidate,
+        position: position,
+        expiry: expiry,
+        accessLevel: accessLevel,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        accessCount: 0
+    };
+
+    // Save to database
+    passDatabase.push(passObj);
+
+    // Show success view
+    document.getElementById('passForm').style.display = 'none';
+    document.getElementById('passGenerated').style.display = 'block';
+
+    // Update display
+    document.getElementById('generatedPassReference').textContent = passReference;
+    document.getElementById('passExpiryDisplay').textContent = new Date(expiry).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    // Auto-send if checked
+    if (document.getElementById('autoEmail').checked) {
+        sendPassEmail(passObj);
+    }
+
+    showToast('✅ Pass generated successfully!');
+}
+
+// Send Pass Email (simulated)
+function sendPassEmail(passObj) {
+    setTimeout(() => {
+        showToast(`📧 Pass sent to ${passObj.candidate}`);
+    }, 500);
+}
+
+// Reset Pass Form
+function resetPassForm() {
+    document.getElementById('passForm').style.display = 'block';
+    document.getElementById('passGenerated').style.display = 'none';
+    document.getElementById('passCandidate').value = '';
+    document.getElementById('passPosition').value = '';
+}
+
+// Copy Pass Reference
+function copyPassReference() {
+    const reference = document.getElementById('generatedPassReference').textContent;
+    navigator.clipboard.writeText(reference).then(() => {
+        showToast('📋 Pass reference copied!');
+    });
+}
+
+// View Pass Details
+function viewPassDetails() {
+    const reference = document.getElementById('generatedPassReference').textContent;
+    showToast(`Opening details for ${reference}...`);
+    // Would open detailed view modal here
+}
+
+// ===== SECRET ADMIN PANEL =====
+let adminKeyCombo = [];
+
+// Secret keyboard combo to access admin (Ctrl+Shift+Alt+A)
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
+        e.preventDefault();
+        openAdminPanel();
+    }
+});
+
+// Open Admin Panel
+function openAdminPanel() {
+    document.getElementById('secretAdminPanel').style.display = 'block';
+    showToast('🔐 Admin panel accessed');
+}
+
+// Close Admin Panel
+function closeAdminPanel() {
+    document.getElementById('secretAdminPanel').style.display = 'none';
+}
+
+// Admin Functions
+function openTemplateBuilder() {
+    document.getElementById('templateBuilderModal').style.display = 'flex';
+    closeAdminPanel();
+}
+
+function closeTemplateBuilder() {
+    document.getElementById('templateBuilderModal').style.display = 'none';
+}
+
+function viewAllPasses() {
+    showToast(`Viewing ${passDatabase.length} passes in system`);
+    console.table(passDatabase);
+    alert(`Total Passes: ${passDatabase.length}\n\nCheck console for full list`);
+}
+
+function viewPassAnalytics() {
+    const active = passDatabase.filter(p => p.status === 'active').length;
+    const expired = passDatabase.filter(p => p.status === 'expired').length;
+    alert(`📊 Pass Analytics\n\nTotal: ${passDatabase.length}\nActive: ${active}\nExpired: ${expired}\nConversion Rate: 76%`);
+}
+
+function bulkPassActions() {
+    showToast('⚡ Opening bulk operations panel...');
+}
+
+function viewCandidateDB() {
+    showToast('🗄️ Opening candidate database...');
+}
+
+function viewPassDB() {
+    console.table(passDatabase);
+    showToast(`📋 Pass DB (${passDatabase.length} entries) - Check console`);
+}
+
+function viewTemplateDB() {
+    showToast('📑 Opening template database...');
+}
+
+function backupDatabase() {
+    const backup = JSON.stringify(passDatabase, null, 2);
+    console.log('Database Backup:', backup);
+    showToast('💾 Database backed up to console');
+}
+
+function revokePass() {
+    const ref = prompt('Enter pass reference to revoke:');
+    if (ref) {
+        const pass = passDatabase.find(p => p.reference === ref);
+        if (pass) {
+            pass.status = 'revoked';
+            showToast(`🚫 Pass ${ref} revoked`);
+        } else {
+            showToast('❌ Pass not found');
+        }
+    }
+}
+
+function blockIP() {
+    const ip = prompt('Enter IP address to block:');
+    if (ip) {
+        showToast(`🔒 IP ${ip} blocked`);
+    }
+}
+
+function viewAccessLogs() {
+    showToast('📜 Opening access logs...');
+}
+
+function generateSecurityReport() {
+    showToast('📊 Generating security report...');
+}
+
+// ===== TEMPLATE BUILDER =====
+let draggedComponent = null;
+
+// Drag and Drop Functions
+function allowDrop(ev) {
+    ev.preventDefault();
+    document.getElementById('templateCanvas').classList.add('dragover');
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    document.getElementById('templateCanvas').classList.remove('dragover');
+
+    if (draggedComponent) {
+        const componentType = draggedComponent.dataset.component;
+        addComponentToCanvas(componentType);
+        showToast(`✓ Added ${componentType} component`);
+    }
+}
+
+// Add component to canvas
+function addComponentToCanvas(type) {
+    const canvas = document.getElementById('templateCanvas');
+    const componentHTML = `
+        <div class="card p-3 mb-3" style="border: 2px solid #667eea;">
+            <strong>📝 ${type.toUpperCase()} Component</strong>
+            <p class="mb-0 text-muted">Configure in properties panel →</p>
+        </div>
+    `;
+    canvas.insertAdjacentHTML('beforeend', componentHTML);
+}
+
+// Initialize drag handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const draggables = document.querySelectorAll('.draggable-component');
+    draggables.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            draggedComponent = e.target;
+        });
+
+        item.addEventListener('dragend', function(e) {
+            draggedComponent = null;
+            document.getElementById('templateCanvas').classList.remove('dragover');
+        });
+    });
+});
+
+// Add Generate Pass buttons to candidate cards
+document.addEventListener('DOMContentLoaded', function() {
+    // Add pass generation button to shortlist combo
+    const shortlistButtons = document.querySelectorAll('.combo-btn');
+    // Note: In production, add onclick="openPassModal(candidateId)" to appropriate buttons
+});
+
+// Export pass data (for backup/analysis)
+function exportPassData() {
+    const dataStr = JSON.stringify(passDatabase, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'pass-database-backup.json';
+    link.click();
+    showToast('📥 Pass data exported');
+}
+
+console.log('🎫 Pass Management System initialized');
+console.log('🔐 Access Admin Panel: Press Ctrl+Shift+Alt+X');
+console.log('💡 Total Passes Generated:', passDatabase.length);
 </script>
 </body>
 </html>
