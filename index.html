@@ -155,18 +155,395 @@
             min-width: 200px;
         }
 
+        /* AI Assistant Styles */
+        .ai-assistant-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            z-index: 5000;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: aiPulse 3s infinite;
+            transition: transform 0.3s ease;
+        }
+        .ai-assistant-btn:hover {
+            transform: scale(1.1);
+        }
+        .ai-assistant-btn .ai-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #F44336;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        @keyframes aiPulse {
+            0%, 100% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(102, 126, 234, 0.8); }
+        }
+
+        /* AI Chat Interface */
+        .ai-chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 6000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-chat-container {
+            width: 90%;
+            max-width: 900px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .ai-chat-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .ai-status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .ai-quick-actions {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: #F5F5F5;
+            border-bottom: 1px solid #E0E0E0;
+            overflow-x: auto;
+        }
+        .ai-quick-btn {
+            padding: 8px 15px;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .ai-quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .ai-chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .ai-message {
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+        }
+        .ai-message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .ai-message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .ai-message.assistant .ai-message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .ai-message.user .ai-message-avatar {
+            background: #E0E0E0;
+            color: #333;
+        }
+        .ai-message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .ai-message.user .ai-message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .ai-message-time {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 5px;
+        }
+        .ai-typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+        }
+        .ai-typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+        .ai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        .ai-chat-input-area {
+            padding: 15px;
+            border-top: 1px solid #E0E0E0;
+            background: white;
+            border-radius: 0 0 25px 25px;
+        }
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .ai-input-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+        .ai-input-container input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .ai-send-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* AI Suggestions Panel */
+        .ai-suggestions {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .ai-suggestion-item {
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .ai-suggestion-item:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* AI Processing Indicator */
+        .ai-processing {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 7000;
+            text-align: center;
+        }
+        .ai-processing-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #E0E0E0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* AI Badge on Cards */
+        .ai-scored {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        .ai-score-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .stages { flex-direction: column; }
             .keyboard-hint { display: none; }
+            .ai-assistant-btn { bottom: 70px; right: 20px; width: 60px; height: 60px; }
+            .ai-chat-container { width: 95%; height: 90vh; }
         }
     </style>
 </head>
 <body>
 
+<!-- AI Assistant Floating Button -->
+<button class="ai-assistant-btn" onclick="openAIAssistant()" title="AI HR Assistant (Press A)">
+    🤖
+    <span class="ai-badge">3</span>
+</button>
+
+<!-- AI Chat Modal -->
+<div id="aiChatModal" class="ai-chat-modal" style="display:none;">
+    <div class="ai-chat-container">
+        <!-- Header -->
+        <div class="ai-chat-header">
+            <div>
+                <h3 style="margin: 0;">🤖 AI HR Assistant</h3>
+                <div class="ai-status">
+                    <div class="ai-status-dot"></div>
+                    <span>Online & Ready</span>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-light" onclick="closeAIAssistant()">✕ Close</button>
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="ai-quick-actions">
+            <button class="ai-quick-btn" onclick="aiQuickAction('source')">🔍 Source Profiles</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('score')">📊 Score All CVs</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('rank')">⭐ Rank Candidates</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('jd')">📝 Generate JD</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('emails')">✉️ Draft Emails</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('interview')">💬 Interview Questions</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('research')">🔬 Research Candidate</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('autopilot')">✈️ Enable Autopilot</button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <!-- Welcome Message -->
+            <div class="ai-message assistant">
+                <div class="ai-message-avatar">🤖</div>
+                <div>
+                    <div class="ai-message-content">
+                        <strong>Hey! I'm your AI HR Assistant 👋</strong>
+                        <p class="mb-2 mt-2">I can help you with:</p>
+                        <ul class="mb-0">
+                            <li><strong>Profile Sourcing:</strong> Search LinkedIn, Indeed, job boards automatically</li>
+                            <li><strong>CV Scoring:</strong> Analyze and score resumes instantly (94% accuracy)</li>
+                            <li><strong>Candidate Ranking:</strong> Rank all candidates by fit, experience, skills</li>
+                            <li><strong>JD Generation:</strong> Create professional job descriptions in seconds</li>
+                            <li><strong>Email Drafting:</strong> Write screening, rejection, interview emails</li>
+                            <li><strong>Background Research:</strong> Deep-dive into candidate backgrounds</li>
+                            <li><strong>Interview Prep:</strong> Generate tailored interview questions</li>
+                            <li><strong>Autopilot Mode:</strong> Let me handle routine tasks automatically</li>
+                        </ul>
+                        <p class="mt-2 mb-0"><em>What would you like me to do first?</em></p>
+                    </div>
+                    <div class="ai-message-time">Just now</div>
+                </div>
+            </div>
+
+            <!-- AI Suggestions -->
+            <div class="ai-suggestions">
+                <strong>💡 AI Suggestions Based on Your Current State:</strong>
+                <div class="ai-suggestion-item" onclick="aiSuggestion(1)">
+                    🚨 <strong>3 candidates are 72h+ overdue</strong> - Should I auto-send screening packages and set reminders?
+                </div>
+                <div class="ai-suggestion-item" onclick="aiSuggestion(2)">
+                    📊 <strong>Score all 23 new candidates</strong> - I can analyze and rank them by fit (Est. 2 mins)
+                </div>
+                <div class="ai-suggestion-item" onclick="aiSuggestion(3)">
+                    📝 <strong>2 JDs pending approval</strong> - I can review and auto-improve them for manager review
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (hidden by default) -->
+        <div id="aiTypingIndicator" class="ai-typing-indicator" style="display:none;">
+            <div class="ai-typing-dot"></div>
+            <div class="ai-typing-dot"></div>
+            <div class="ai-typing-dot"></div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="ai-chat-input-area">
+            <div class="ai-input-container">
+                <input type="text" id="aiChatInput" placeholder="Ask me anything... (e.g., 'Score all CVs', 'Generate a JD for Electronics Engineer')" onkeypress="handleAIChatEnter(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Processing Overlay -->
+<div id="aiProcessing" class="ai-processing" style="display:none;">
+    <div class="ai-processing-spinner"></div>
+    <h5 id="aiProcessingText">AI is processing...</h5>
+    <p id="aiProcessingSubtext" class="text-muted mb-0">This may take a few moments</p>
+</div>
+
 <!-- Keyboard Shortcuts Hint -->
 <div class="keyboard-hint" id="keyboardHint">
-    Press <kbd>?</kbd> for shortcuts | <kbd>S</kbd>=Shortlist | <kbd>R</kbd>=Reject | <kbd>N</kbd>=Next | <kbd>F</kbd>=Focus Mode
+    Press <kbd>?</kbd> for shortcuts | <kbd>A</kbd>=AI Assistant | <kbd>S</kbd>=Shortlist | <kbd>R</kbd>=Reject | <kbd>N</kbd>=Next | <kbd>F</kbd>=Focus Mode
 </div>
 
 <!-- Priority Dashboard (Sticky Top) -->
@@ -249,23 +626,44 @@
         <button class="btn btn-sm btn-secondary" onclick="viewPending()">View Pending</button>
     </div>
 
-    <!-- CANDIDATE CARD 1 - URGENT (72h+) -->
-    <div class="candidate-card card mb-3 sla-overdue" data-candidate-id="1">
+    <!-- CANDIDATE CARD 1 - URGENT (72h+) WITH AI SCORING -->
+    <div class="candidate-card card mb-3 sla-overdue ai-scored" data-candidate-id="1">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
                     <h5 class="d-inline">
                         #1 ⭐ Nafees Ahamed K
+                        <span class="ai-score-badge">🤖 AI Scored: 94%</span>
                         <span class="status-badge badge-urgent">OVERDUE 72h</span>
                         <span class="time-badge time-critical">⏰ Applied 3 days ago</span>
                     </h5>
                     <p class="mb-1">Profile Match: 94% [LinkedIn] • Electronics Engineer • 3+ years • Bachelor's • Dubai</p>
-                    <p class="mb-2"><strong>Key:</strong> Strong PCB/embedded; limited IoT. <strong>Risk:</strong> High salary expectations.</p>
+                    <p class="mb-2">
+                        <strong>AI Analysis:</strong> Strong PCB/embedded background; limited IoT exposure. Perfect educational fit.
+                        <strong>Risk:</strong> Salary expectations 15% above budget.
+                    </p>
+                    <!-- AI Breakdown -->
+                    <details class="mt-2">
+                        <summary class="text-muted" style="cursor: pointer;"><small>🤖 View AI Detailed Analysis</small></summary>
+                        <div class="mt-2 p-2 bg-light rounded">
+                            <strong>AI Scoring Breakdown:</strong>
+                            <ul class="mb-0 mt-2" style="font-size: 0.9rem;">
+                                <li><strong>Technical Skills Match: 96%</strong> - PCB Design (Expert), Embedded Systems (Advanced)</li>
+                                <li><strong>Experience Level: 92%</strong> - 3.5 years (ideal range: 3-5 years)</li>
+                                <li><strong>Education Fit: 100%</strong> - Bachelor's in Electronics Engineering</li>
+                                <li><strong>Location: 90%</strong> - Based in Dubai, willing to relocate</li>
+                                <li><strong>Salary Alignment: 85%</strong> - Expects AED 18k (budget: AED 15k)</li>
+                                <li><strong>Culture Fit: 94%</strong> - Team player, innovative mindset</li>
+                            </ul>
+                            <p class="mt-2 mb-0"><strong>AI Recommendation:</strong> <span class="badge bg-success">Strong Shortlist</span> - Top 5% candidate. Suggest negotiating salary during interview.</p>
+                        </div>
+                    </details>
                 </div>
                 <div class="text-end">
                     <small class="d-block text-muted">Last Action: 72h ago</small>
                     <small class="d-block text-danger">⚠️ SLA breach</small>
+                    <button class="btn btn-sm btn-outline-secondary mt-2" onclick="aiResearchCandidate(1)">🤖 AI Research</button>
                 </div>
             </div>
 
@@ -938,6 +1336,429 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('input[type="search"]').focus();
         }
     });
+});
+
+// ===== AI ASSISTANT FUNCTIONS =====
+let aiChatHistory = [];
+
+// Open AI Assistant
+function openAIAssistant() {
+    document.getElementById('aiChatModal').style.display = 'flex';
+    document.getElementById('aiChatInput').focus();
+}
+
+// Close AI Assistant
+function closeAIAssistant() {
+    document.getElementById('aiChatModal').style.display = 'none';
+}
+
+// Handle Enter key in chat
+function handleAIChatEnter(event) {
+    if (event.key === 'Enter') {
+        sendAIMessage();
+    }
+}
+
+// Send AI Message
+function sendAIMessage() {
+    const input = document.getElementById('aiChatInput');
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    // Add user message to chat
+    addAIMessage('user', message);
+    input.value = '';
+
+    // Show typing indicator
+    document.getElementById('aiTypingIndicator').style.display = 'flex';
+
+    // Simulate AI response (replace with actual AI API call)
+    setTimeout(() => {
+        document.getElementById('aiTypingIndicator').style.display = 'none';
+        processAIRequest(message);
+    }, 1500);
+}
+
+// Process AI Request
+function processAIRequest(message) {
+    const lowerMessage = message.toLowerCase();
+
+    // Smart responses based on keywords
+    if (lowerMessage.includes('score') || lowerMessage.includes('cv')) {
+        aiScoreAllCandidates();
+    } else if (lowerMessage.includes('rank')) {
+        aiRankCandidates();
+    } else if (lowerMessage.includes('jd') || lowerMessage.includes('job description')) {
+        aiGenerateJD();
+    } else if (lowerMessage.includes('source') || lowerMessage.includes('find')) {
+        aiSourceProfiles(message);
+    } else if (lowerMessage.includes('email') || lowerMessage.includes('draft')) {
+        aiDraftEmails(message);
+    } else if (lowerMessage.includes('interview')) {
+        aiGenerateInterviewQuestions();
+    } else if (lowerMessage.includes('research')) {
+        aiResearchCandidate();
+    } else if (lowerMessage.includes('autopilot') || lowerMessage.includes('auto')) {
+        aiEnableAutopilot();
+    } else {
+        // General response
+        addAIMessage('assistant', `I understand you want help with: "${message}". Let me break this down:\n\n1. I can analyze what you need\n2. Execute the task automatically\n3. Provide results and recommendations\n\nWould you like me to proceed with this task?`);
+    }
+}
+
+// Add AI Message to Chat
+function addAIMessage(sender, content) {
+    const messagesContainer = document.getElementById('aiChatMessages');
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const messageHTML = `
+        <div class="ai-message ${sender}">
+            <div class="ai-message-avatar">${sender === 'user' ? '👤' : '🤖'}</div>
+            <div>
+                <div class="ai-message-content">${content}</div>
+                <div class="ai-message-time">${time}</div>
+            </div>
+        </div>
+    `;
+
+    messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// AI Quick Actions
+function aiQuickAction(action) {
+    document.getElementById('aiTypingIndicator').style.display = 'flex';
+
+    setTimeout(() => {
+        document.getElementById('aiTypingIndicator').style.display = 'none';
+
+        switch(action) {
+            case 'source':
+                aiSourceProfiles();
+                break;
+            case 'score':
+                aiScoreAllCandidates();
+                break;
+            case 'rank':
+                aiRankCandidates();
+                break;
+            case 'jd':
+                aiGenerateJD();
+                break;
+            case 'emails':
+                aiDraftEmails();
+                break;
+            case 'interview':
+                aiGenerateInterviewQuestions();
+                break;
+            case 'research':
+                aiResearchCandidate();
+                break;
+            case 'autopilot':
+                aiEnableAutopilot();
+                break;
+        }
+    }, 1000);
+}
+
+// AI Source Profiles
+function aiSourceProfiles(query = '') {
+    showAIProcessing('Sourcing profiles from LinkedIn, Indeed, and job boards...', 'Analyzing 150+ profiles');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>🔍 Profile Sourcing Complete!</strong>
+            <p class="mt-2 mb-2">I've searched LinkedIn, Indeed, Glassdoor, and Naukri for Electronics Engineers.</p>
+            <ul>
+                <li><strong>Total Profiles Found: 127</strong></li>
+                <li>High Match (85%+): 23 candidates</li>
+                <li>Medium Match (70-84%): 45 candidates</li>
+                <li>Low Match (<70%): 59 candidates</li>
+            </ul>
+            <p class="mb-0"><strong>Top 3 New Discoveries:</strong></p>
+            <ol class="mb-0">
+                <li><strong>Priya Sharma</strong> - 5 years, PCB+IoT expert, Abu Dhabi (96% match)</li>
+                <li><strong>Mohammed Ali</strong> - 4 years, Embedded systems, Dubai (94% match)</li>
+                <li><strong>Lisa Chen</strong> - 6 years, Leadership experience, Sharjah (92% match)</li>
+            </ol>
+            <p class="mt-2 mb-0"><em>Should I add these to your candidate pool?</em></p>
+        `);
+    }, 3000);
+}
+
+// AI Score All Candidates
+function aiScoreAllCandidates() {
+    showAIProcessing('Analyzing 23 CVs with AI...', 'Scoring technical skills, experience, education, and fit');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>📊 CV Scoring Complete!</strong>
+            <p class="mt-2 mb-2">I've analyzed all 23 candidates using advanced AI algorithms.</p>
+            <p><strong>Results:</strong></p>
+            <ul>
+                <li>🟢 <strong>Top Tier (90%+):</strong> 5 candidates - <em>Strong recommend shortlist</em></li>
+                <li>🟡 <strong>Good Fit (80-89%):</strong> 8 candidates - <em>Recommend interview</em></li>
+                <li>🟠 <strong>Moderate (70-79%):</strong> 6 candidates - <em>Maybe pile</em></li>
+                <li>🔴 <strong>Low Fit (<70%):</strong> 4 candidates - <em>Recommend rejection</em></li>
+            </ul>
+            <p class="mb-1"><strong>AI has updated all candidate cards with detailed scoring.</strong></p>
+            <p class="mb-0"><em>Want me to auto-shortlist the top 5 and send screening packages?</em></p>
+        `);
+        showToast('✓ All 23 candidates scored by AI');
+    }, 3500);
+}
+
+// AI Rank Candidates
+function aiRankCandidates() {
+    showAIProcessing('Ranking candidates by fit, experience, and potential...', 'Using machine learning algorithms');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>⭐ Candidate Ranking Complete!</strong>
+            <p class="mt-2 mb-2">Here's the final ranking based on multi-factor analysis:</p>
+            <ol class="mb-2">
+                <li><strong>Nafees Ahamed K</strong> - 94% (Tech: 96%, Experience: 92%, Culture: 94%)</li>
+                <li><strong>Priya Sharma</strong> - 93% (Tech: 98%, Experience: 90%, Culture: 91%)</li>
+                <li><strong>Ahmed Al-Rashid</strong> - 91% (Tech: 94%, Experience: 88%, Culture: 92%)</li>
+                <li><strong>Sarah Johnson</strong> - 88% (Tech: 85%, Experience: 95%, Culture: 85%)</li>
+                <li><strong>Mohammed Ali</strong> - 87% (Tech: 90%, Experience: 84%, Culture: 88%)</li>
+            </ol>
+            <p class="mb-1"><strong>Key Insights:</strong></p>
+            <ul class="mb-0">
+                <li>Top 3 are significantly above others (>90%)</li>
+                <li>All top 5 meet minimum requirements</li>
+                <li>Consider interviewing top 5 for best ROI</li>
+            </ul>
+            <p class="mt-2 mb-0"><em>Should I re-order your candidate list by this ranking?</em></p>
+        `);
+        showToast('✓ Candidates ranked by AI');
+    }, 2500);
+}
+
+// AI Generate JD
+function aiGenerateJD() {
+    showAIProcessing('Generating professional JD...', 'Analyzing industry standards and requirements');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>📝 Job Description Generated!</strong>
+            <p class="mt-2 mb-2">I've created a comprehensive JD based on your requirements:</p>
+            <div class="bg-light p-3 rounded mt-2">
+                <strong>Electronics Engineer (REQ-2025-EE-001)</strong><br>
+                <strong>Location:</strong> Dubai, UAE<br>
+                <strong>Experience:</strong> 3-5 years<br><br>
+                <strong>Key Responsibilities:</strong>
+                <ul class="mb-2" style="font-size: 0.9rem;">
+                    <li>Design and develop PCB circuits for IoT devices</li>
+                    <li>Work on embedded systems programming (C/C++)</li>
+                    <li>Conduct testing and troubleshooting of electronic systems</li>
+                    <li>Collaborate with cross-functional teams on product development</li>
+                </ul>
+                <strong>Requirements:</strong>
+                <ul class="mb-0" style="font-size: 0.9rem;">
+                    <li>Bachelor's degree in Electronics Engineering</li>
+                    <li>3+ years experience in PCB design and embedded systems</li>
+                    <li>Proficiency in CAD tools (Altium, Eagle)</li>
+                    <li>Strong problem-solving and analytical skills</li>
+                </ul>
+            </div>
+            <p class="mt-2 mb-0"><em>Should I send this to the hiring manager for approval?</em></p>
+        `);
+        showToast('✓ JD generated by AI');
+    }, 2000);
+}
+
+// AI Draft Emails
+function aiDraftEmails(context = '') {
+    showAIProcessing('Drafting personalized emails...', 'Creating professional, engaging content');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>✉️ Email Drafts Ready!</strong>
+            <p class="mt-2 mb-2">I've prepared 3 email templates for you:</p>
+
+            <details class="mb-2">
+                <summary><strong>1. Screening Package Email (for shortlisted candidates)</strong></summary>
+                <div class="bg-light p-2 rounded mt-2" style="font-size: 0.85rem;">
+                    <strong>Subject:</strong> Next Steps - Electronics Engineer Position<br><br>
+                    Dear [Candidate Name],<br><br>
+                    Thank you for your interest in the Electronics Engineer position at [Company]. We were impressed with your background in PCB design and embedded systems.<br><br>
+                    To move forward, please complete the following by [Date]:<br>
+                    1. Candidate Information Form (attached)<br>
+                    2. Soft Skills Assessment (link)<br>
+                    3. Technical Assessment (link)<br><br>
+                    Looking forward to learning more about you!<br><br>
+                    Best regards,<br>[Your Name]
+                </div>
+            </details>
+
+            <details class="mb-2">
+                <summary><strong>2. Interview Invitation Email</strong></summary>
+                <div class="bg-light p-2 rounded mt-2" style="font-size: 0.85rem;">
+                    <strong>Subject:</strong> Interview Invitation - Electronics Engineer<br><br>
+                    [Personalized interview invitation content...]
+                </div>
+            </details>
+
+            <details>
+                <summary><strong>3. Rejection Email (Respectful & Encouraging)</strong></summary>
+                <div class="bg-light p-2 rounded mt-2" style="font-size: 0.85rem;">
+                    <strong>Subject:</strong> Update on Your Application<br><br>
+                    [Thoughtful rejection content...]
+                </div>
+            </details>
+
+            <p class="mt-2 mb-0"><em>Want me to send these to the candidates automatically?</em></p>
+        `);
+    }, 2000);
+}
+
+// AI Generate Interview Questions
+function aiGenerateInterviewQuestions() {
+    showAIProcessing('Generating tailored interview questions...', 'Based on candidate background and role requirements');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>💬 Interview Questions Generated!</strong>
+            <p class="mt-2 mb-2">I've created a comprehensive question set for Electronics Engineer interviews:</p>
+
+            <p class="mb-1"><strong>Technical Questions (15):</strong></p>
+            <ol style="font-size: 0.9rem;">
+                <li>Describe your experience with PCB design. What tools have you used?</li>
+                <li>Explain the process you follow for embedded systems development.</li>
+                <li>How do you approach debugging complex electronic circuits?</li>
+                <li>What's your experience with IoT device development?</li>
+                <li>Can you explain a challenging project you've worked on?</li>
+            </ol>
+
+            <p class="mb-1 mt-2"><strong>Behavioral Questions (10):</strong></p>
+            <ol style="font-size: 0.9rem;">
+                <li>Tell me about a time you had to meet a tight deadline.</li>
+                <li>How do you handle disagreements with team members?</li>
+                <li>Describe a project where you had to learn something new quickly.</li>
+            </ol>
+
+            <p class="mb-1 mt-2"><strong>Candidate-Specific Questions (for Nafees Ahamed K):</strong></p>
+            <ul style="font-size: 0.9rem;" class="mb-0">
+                <li>I see you have limited IoT exposure - how comfortable would you be learning this quickly?</li>
+                <li>Your salary expectations are 15% above our budget - is there flexibility here?</li>
+            </ul>
+
+            <p class="mt-2 mb-0"><em>Should I create a downloadable interview guide?</em></p>
+        `);
+        showToast('✓ Interview questions generated');
+    }, 2500);
+}
+
+// AI Research Candidate
+function aiResearchCandidate(candidateId = 1) {
+    showAIProcessing('Deep-diving into candidate background...', 'Searching LinkedIn, company websites, publications');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>🔬 Candidate Research Complete!</strong>
+            <p class="mt-2 mb-2"><strong>Nafees Ahamed K - Deep Dive Analysis:</strong></p>
+
+            <p class="mb-1"><strong>Professional Background:</strong></p>
+            <ul style="font-size: 0.9rem;">
+                <li>Currently at Tech Corp Dubai (2.5 years) - Electronics Engineer</li>
+                <li>Previous: Embedded Systems Developer at Innovation Labs (1 year)</li>
+                <li>Education: B.Eng Electronics, University of Dubai (2019, 3.7 GPA)</li>
+            </ul>
+
+            <p class="mb-1 mt-2"><strong>Skills Verification:</strong></p>
+            <ul style="font-size: 0.9rem;">
+                <li>✓ PCB Design: Confirmed expert level (multiple projects on GitHub)</li>
+                <li>✓ Embedded Systems: Advanced C/C++ skills verified</li>
+                <li>⚠️ IoT: Limited exposure (only 1 project mentioned)</li>
+                <li>✓ Team Leadership: Led 2 junior engineers</li>
+            </ul>
+
+            <p class="mb-1 mt-2"><strong>Red Flags / Concerns:</strong></p>
+            <ul style="font-size: 0.9rem;">
+                <li>🟢 No employment gaps found</li>
+                <li>🟡 Average job tenure: 1.5 years (slightly short)</li>
+                <li>🟢 Strong LinkedIn recommendations (3 from managers)</li>
+                <li>🟢 Active in tech community (published 2 articles)</li>
+            </ul>
+
+            <p class="mb-1 mt-2"><strong>Salary Benchmarking:</strong></p>
+            <p style="font-size: 0.9rem;" class="mb-2">Market rate for 3.5 years experience: AED 14k-17k. Candidate expects 18k (slightly above but negotiable).</p>
+
+            <p class="mb-0"><strong>AI Recommendation:</strong> <span class="badge bg-success">Strong Proceed</span> - High potential, minor IoT skill gap easily addressable through training.</p>
+        `);
+        showToast('✓ Deep research completed');
+    }, 3000);
+}
+
+// AI Enable Autopilot
+function aiEnableAutopilot() {
+    if (confirm('Enable AI Autopilot Mode? This will:\n\n• Auto-score new candidates\n• Auto-send screening packages\n• Auto-remind on delays\n• Auto-generate emails\n• Notify you of critical decisions\n\nProceed?')) {
+        showAIProcessing('Enabling AI Autopilot...', 'Setting up automation rules');
+
+        setTimeout(() => {
+            hideAIProcessing();
+            addAIMessage('assistant', `
+                <strong>✈️ AI Autopilot Enabled!</strong>
+                <p class="mt-2 mb-2">I'm now running in autopilot mode. Here's what I'll do automatically:</p>
+                <ul>
+                    <li>✓ Score all new candidate CVs within 5 minutes of application</li>
+                    <li>✓ Auto-shortlist candidates with 85%+ scores</li>
+                    <li>✓ Send screening packages to shortlisted candidates</li>
+                    <li>✓ Set 48h reminders for all screening packages</li>
+                    <li>✓ Auto-remind managers on pending JDs (daily)</li>
+                    <li>✓ Alert you when candidates complete assessments</li>
+                    <li>✓ Flag candidates idle for 48+ hours</li>
+                    <li>✓ Generate weekly summary reports</li>
+                </ul>
+                <p class="mb-0"><em>I'll notify you before making critical decisions. You're still in control!</em></p>
+            `);
+            showToast('✈️ AI Autopilot Mode: ACTIVE');
+            document.querySelector('.ai-badge').textContent = 'AUTO';
+        }, 2000);
+    }
+}
+
+// AI Suggestion Click Handler
+function aiSuggestion(id) {
+    switch(id) {
+        case 1:
+            aiQuickAction('source');
+            break;
+        case 2:
+            aiQuickAction('score');
+            break;
+        case 3:
+            aiQuickAction('jd');
+            break;
+    }
+}
+
+// Show AI Processing Overlay
+function showAIProcessing(mainText, subText) {
+    document.getElementById('aiProcessingText').textContent = mainText;
+    document.getElementById('aiProcessingSubtext').textContent = subText;
+    document.getElementById('aiProcessing').style.display = 'block';
+}
+
+// Hide AI Processing Overlay
+function hideAIProcessing() {
+    document.getElementById('aiProcessing').style.display = 'none';
+}
+
+// Add 'A' keyboard shortcut for AI
+document.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === 'a' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        openAIAssistant();
+    }
 });
 
 // Toggle dark mode
