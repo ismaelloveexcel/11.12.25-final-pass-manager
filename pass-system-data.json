@@ -1,0 +1,1012 @@
+{
+  "systemInfo": {
+    "name": "Pass Management System",
+    "version": "1.0.0",
+    "environment": "production",
+    "lastBackup": "2025-12-11T10:30:00.000Z",
+    "totalPassesGenerated": 1247,
+    "activePasses": 342,
+    "expiredPasses": 905
+  },
+
+  "passDatabase": [
+    {
+      "id": "pm_001234",
+      "reference": "PASS-2025-SCR-001234",
+      "backendURL": "https://secure.hrpass.internal/UEFTUy0yMDI1LVNDUI0wMDEyMzQ=/1702345678901",
+      "type": "screening",
+      "candidate": {
+        "id": "cand_98765",
+        "name": "Nafees Ahamed K",
+        "email": "nafees.ahamed@email.com",
+        "phone": "+971-50-123-4567",
+        "position": "Electronics Engineer (REQ-2025-EE-001)",
+        "location": "Dubai, UAE"
+      },
+      "passDetails": {
+        "accessLevel": "standard",
+        "validFrom": "2025-12-11T10:00:00.000Z",
+        "validUntil": "2025-12-31T23:59:59.000Z",
+        "status": "active",
+        "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+        "barcode": "PASS2025SCR001234"
+      },
+      "permissions": {
+        "canAccessForms": true,
+        "canTakeAssessments": true,
+        "canUploadDocuments": true,
+        "canViewProgress": true,
+        "canAccessResources": false
+      },
+      "includedComponents": [
+        {
+          "type": "form",
+          "name": "Candidate Information Form",
+          "status": "pending",
+          "url": "/forms/candidate-info",
+          "requiredFields": ["name", "email", "phone", "address", "education", "experience"]
+        },
+        {
+          "type": "assessment",
+          "name": "Soft Skills Assessment",
+          "status": "pending",
+          "url": "/assessments/soft-skills",
+          "duration": 30,
+          "questions": 25
+        },
+        {
+          "type": "assessment",
+          "name": "Technical Assessment - Electronics",
+          "status": "pending",
+          "url": "/assessments/technical-electronics",
+          "duration": 60,
+          "questions": 40
+        },
+        {
+          "type": "upload",
+          "name": "Document Upload Portal",
+          "status": "available",
+          "url": "/upload/documents",
+          "allowedTypes": ["pdf", "doc", "docx", "jpg", "png"],
+          "maxSize": 10485760
+        },
+        {
+          "type": "tracker",
+          "name": "Progress Tracker",
+          "status": "available",
+          "url": "/progress",
+          "completionPercentage": 0
+        }
+      ],
+      "activity": {
+        "createdAt": "2025-12-11T10:30:00.000Z",
+        "createdBy": "hr_admin_001",
+        "emailSent": true,
+        "emailSentAt": "2025-12-11T10:30:15.000Z",
+        "smsSent": true,
+        "smsSentAt": "2025-12-11T10:30:20.000Z",
+        "accessCount": 0,
+        "lastAccessedAt": null,
+        "lastAccessedIP": null,
+        "completionStatus": "not_started"
+      },
+      "notifications": {
+        "remindersSent": 0,
+        "lastReminderAt": null,
+        "expiryWarning": false,
+        "expiryWarningDate": "2025-12-27T00:00:00.000Z"
+      },
+      "metadata": {
+        "templateUsed": "screening-pass-default",
+        "colorScheme": "#667eea",
+        "autoApproved": true,
+        "managerApprovalRequired": false,
+        "trackingEnabled": true
+      }
+    },
+    {
+      "id": "pm_001235",
+      "reference": "PASS-2025-CAN-001235",
+      "backendURL": "https://secure.hrpass.internal/UEFTUy0yMDI1LUNBTI0wMDEyMzU=/1702345679902",
+      "type": "candidate",
+      "candidate": {
+        "id": "cand_98766",
+        "name": "Sarah Johnson",
+        "email": "sarah.johnson@email.com",
+        "phone": "+971-50-234-5678",
+        "position": "Electronics Engineer (REQ-2025-EE-001)",
+        "location": "Abu Dhabi, UAE"
+      },
+      "passDetails": {
+        "accessLevel": "full",
+        "validFrom": "2025-12-10T09:00:00.000Z",
+        "validUntil": "2026-01-10T23:59:59.000Z",
+        "status": "active",
+        "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+        "barcode": "PASS2025CAN001235"
+      },
+      "permissions": {
+        "canAccessForms": true,
+        "canTakeAssessments": true,
+        "canUploadDocuments": true,
+        "canViewProgress": true,
+        "canAccessResources": true
+      },
+      "includedComponents": [
+        {
+          "type": "backgroundCheck",
+          "name": "Background Verification",
+          "status": "in_progress",
+          "url": "/background-check",
+          "completionPercentage": 65
+        },
+        {
+          "type": "references",
+          "name": "Reference Check Portal",
+          "status": "completed",
+          "url": "/references",
+          "referencesRequired": 3,
+          "referencesReceived": 3
+        },
+        {
+          "type": "medicalCheck",
+          "name": "Medical Clearance",
+          "status": "pending",
+          "url": "/medical-clearance"
+        }
+      ],
+      "activity": {
+        "createdAt": "2025-12-10T09:15:00.000Z",
+        "createdBy": "hr_admin_001",
+        "emailSent": true,
+        "emailSentAt": "2025-12-10T09:15:10.000Z",
+        "smsSent": true,
+        "smsSentAt": "2025-12-10T09:15:15.000Z",
+        "accessCount": 7,
+        "lastAccessedAt": "2025-12-11T08:45:00.000Z",
+        "lastAccessedIP": "185.123.45.67",
+        "completionStatus": "in_progress"
+      },
+      "notifications": {
+        "remindersSent": 2,
+        "lastReminderAt": "2025-12-11T09:00:00.000Z",
+        "expiryWarning": false,
+        "expiryWarningDate": "2026-01-06T00:00:00.000Z"
+      },
+      "metadata": {
+        "templateUsed": "candidate-pass-full",
+        "colorScheme": "#764ba2",
+        "autoApproved": false,
+        "managerApprovalRequired": true,
+        "trackingEnabled": true
+      }
+    },
+    {
+      "id": "pm_001236",
+      "reference": "PASS-2025-ONB-001236",
+      "backendURL": "https://secure.hrpass.internal/UEFTUy0yMDI1LU9OQi0wMDEyMzY=/1702345680903",
+      "type": "onboarding",
+      "candidate": {
+        "id": "cand_98767",
+        "name": "Ahmed Al-Rashid",
+        "email": "ahmed.rashid@email.com",
+        "phone": "+971-50-345-6789",
+        "position": "Electronics Engineer (REQ-2025-EE-001)",
+        "location": "Sharjah, UAE"
+      },
+      "passDetails": {
+        "accessLevel": "full",
+        "validFrom": "2025-12-09T08:00:00.000Z",
+        "validUntil": "2026-01-09T23:59:59.000Z",
+        "status": "active",
+        "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+        "barcode": "PASS2025ONB001236"
+      },
+      "permissions": {
+        "canAccessForms": true,
+        "canTakeAssessments": true,
+        "canUploadDocuments": true,
+        "canViewProgress": true,
+        "canAccessResources": true
+      },
+      "includedComponents": [
+        {
+          "type": "onboardingChecklist",
+          "name": "Day 1 Onboarding Checklist",
+          "status": "completed",
+          "url": "/onboarding/day1",
+          "totalTasks": 15,
+          "completedTasks": 15
+        },
+        {
+          "type": "training",
+          "name": "Company Orientation",
+          "status": "completed",
+          "url": "/training/orientation",
+          "duration": 120,
+          "score": 95
+        },
+        {
+          "type": "training",
+          "name": "Safety Training",
+          "status": "completed",
+          "url": "/training/safety",
+          "duration": 60,
+          "score": 100
+        },
+        {
+          "type": "workspaceSetup",
+          "name": "Workspace & Equipment Setup",
+          "status": "completed",
+          "url": "/workspace-setup"
+        },
+        {
+          "type": "accessCards",
+          "name": "Building Access Card",
+          "status": "issued",
+          "cardNumber": "BAC-2025-001236",
+          "issuedDate": "2025-12-09T14:00:00.000Z"
+        }
+      ],
+      "activity": {
+        "createdAt": "2025-12-09T08:00:00.000Z",
+        "createdBy": "hr_admin_002",
+        "emailSent": true,
+        "emailSentAt": "2025-12-09T08:00:10.000Z",
+        "smsSent": true,
+        "smsSentAt": "2025-12-09T08:00:15.000Z",
+        "accessCount": 12,
+        "lastAccessedAt": "2025-12-11T10:15:00.000Z",
+        "lastAccessedIP": "185.123.45.68",
+        "completionStatus": "completed"
+      },
+      "notifications": {
+        "remindersSent": 0,
+        "lastReminderAt": null,
+        "expiryWarning": false,
+        "expiryWarningDate": "2026-01-05T00:00:00.000Z"
+      },
+      "metadata": {
+        "templateUsed": "onboarding-pass-standard",
+        "colorScheme": "#f093fb",
+        "autoApproved": true,
+        "managerApprovalRequired": false,
+        "trackingEnabled": true
+      }
+    }
+  ],
+
+  "templateDatabase": [
+    {
+      "id": "tpl_001",
+      "name": "Screening Pass - Default",
+      "type": "screening",
+      "description": "Standard screening pass for initial candidate evaluation",
+      "version": "1.0",
+      "isActive": true,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-12-01T00:00:00.000Z",
+      "design": {
+        "colorScheme": "#667eea",
+        "gradientStart": "#667eea",
+        "gradientEnd": "#764ba2",
+        "cardShape": "rounded-20px",
+        "fontFamily": "Inter, sans-serif"
+      },
+      "components": [
+        {
+          "id": "comp_001",
+          "type": "text",
+          "label": "Pass Type",
+          "value": "SCREENING PASS",
+          "position": { "x": 20, "y": 20 },
+          "style": { "fontSize": "24px", "fontWeight": "bold", "color": "#ffffff" }
+        },
+        {
+          "id": "comp_002",
+          "type": "photo",
+          "label": "Candidate Photo",
+          "source": "candidate.photo",
+          "position": { "x": 20, "y": 80 },
+          "size": { "width": 100, "height": 120 },
+          "shape": "rounded"
+        },
+        {
+          "id": "comp_003",
+          "type": "qrCode",
+          "label": "Access QR Code",
+          "source": "pass.backendURL",
+          "position": { "x": 250, "y": 20 },
+          "size": { "width": 100, "height": 100 }
+        },
+        {
+          "id": "comp_004",
+          "type": "text",
+          "label": "Candidate Name",
+          "source": "candidate.name",
+          "position": { "x": 140, "y": 80 },
+          "style": { "fontSize": "18px", "fontWeight": "600", "color": "#ffffff" }
+        },
+        {
+          "id": "comp_005",
+          "type": "text",
+          "label": "Position",
+          "source": "candidate.position",
+          "position": { "x": 140, "y": 110 },
+          "style": { "fontSize": "14px", "color": "#e0e0e0" }
+        },
+        {
+          "id": "comp_006",
+          "type": "text",
+          "label": "Reference",
+          "source": "pass.reference",
+          "position": { "x": 140, "y": 140 },
+          "style": { "fontSize": "16px", "fontWeight": "500", "color": "#ffffff", "fontFamily": "monospace" }
+        },
+        {
+          "id": "comp_007",
+          "type": "expiry",
+          "label": "Valid Until",
+          "source": "pass.validUntil",
+          "position": { "x": 20, "y": 220 },
+          "format": "MMM DD, YYYY",
+          "style": { "fontSize": "14px", "color": "#ffffff" }
+        },
+        {
+          "id": "comp_008",
+          "type": "status",
+          "label": "Status Badge",
+          "source": "pass.status",
+          "position": { "x": 250, "y": 220 },
+          "style": { "fontSize": "12px", "padding": "5px 15px", "borderRadius": "20px" }
+        }
+      ],
+      "smartFields": {
+        "autoPopulateFromDB": true,
+        "generateUniqueQR": true,
+        "includeExpiryCountdown": true,
+        "trackActivity": true
+      },
+      "includedModules": [
+        "candidate_information_form",
+        "soft_skills_assessment",
+        "technical_assessment",
+        "document_upload",
+        "progress_tracker"
+      ],
+      "accessPermissions": {
+        "default": "standard",
+        "canOverride": true
+      }
+    },
+    {
+      "id": "tpl_002",
+      "name": "Candidate Pass - Full Access",
+      "type": "candidate",
+      "description": "Comprehensive candidate pass with background checks and references",
+      "version": "1.0",
+      "isActive": true,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-12-01T00:00:00.000Z",
+      "design": {
+        "colorScheme": "#764ba2",
+        "gradientStart": "#764ba2",
+        "gradientEnd": "#f5576c",
+        "cardShape": "rounded-20px",
+        "fontFamily": "Inter, sans-serif"
+      },
+      "components": [
+        {
+          "id": "comp_009",
+          "type": "text",
+          "label": "Pass Type",
+          "value": "CANDIDATE PASS",
+          "position": { "x": 20, "y": 20 },
+          "style": { "fontSize": "24px", "fontWeight": "bold", "color": "#ffffff" }
+        },
+        {
+          "id": "comp_010",
+          "type": "photo",
+          "label": "Candidate Photo",
+          "source": "candidate.photo",
+          "position": { "x": 20, "y": 80 },
+          "size": { "width": 100, "height": 120 },
+          "shape": "rounded"
+        },
+        {
+          "id": "comp_011",
+          "type": "qrCode",
+          "label": "Access QR Code",
+          "source": "pass.backendURL",
+          "position": { "x": 250, "y": 20 },
+          "size": { "width": 100, "height": 100 }
+        },
+        {
+          "id": "comp_012",
+          "type": "barcode",
+          "label": "Barcode",
+          "source": "pass.barcode",
+          "position": { "x": 140, "y": 180 },
+          "size": { "width": 200, "height": 40 }
+        },
+        {
+          "id": "comp_013",
+          "type": "signature",
+          "label": "HR Manager Signature",
+          "source": "manager.signature",
+          "position": { "x": 20, "y": 240 },
+          "size": { "width": 100, "height": 40 }
+        }
+      ],
+      "smartFields": {
+        "autoPopulateFromDB": true,
+        "generateUniqueQR": true,
+        "includeExpiryCountdown": true,
+        "trackActivity": true
+      },
+      "includedModules": [
+        "background_verification",
+        "reference_checks",
+        "medical_clearance",
+        "police_clearance",
+        "credit_check"
+      ],
+      "accessPermissions": {
+        "default": "full",
+        "canOverride": false
+      }
+    },
+    {
+      "id": "tpl_003",
+      "name": "Onboarding Pass - Standard",
+      "type": "onboarding",
+      "description": "Standard onboarding pass for new hires",
+      "version": "1.0",
+      "isActive": true,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-12-01T00:00:00.000Z",
+      "design": {
+        "colorScheme": "#f093fb",
+        "gradientStart": "#f093fb",
+        "gradientEnd": "#f5576c",
+        "cardShape": "rounded-20px",
+        "fontFamily": "Inter, sans-serif"
+      },
+      "components": [
+        {
+          "id": "comp_014",
+          "type": "text",
+          "label": "Pass Type",
+          "value": "ONBOARDING PASS",
+          "position": { "x": 20, "y": 20 },
+          "style": { "fontSize": "24px", "fontWeight": "bold", "color": "#ffffff" }
+        },
+        {
+          "id": "comp_015",
+          "type": "logo",
+          "label": "Company Logo",
+          "source": "company.logo",
+          "position": { "x": 250, "y": 20 },
+          "size": { "width": 80, "height": 80 }
+        }
+      ],
+      "smartFields": {
+        "autoPopulateFromDB": true,
+        "generateUniqueQR": true,
+        "includeExpiryCountdown": false,
+        "trackActivity": true
+      },
+      "includedModules": [
+        "day1_checklist",
+        "company_orientation",
+        "safety_training",
+        "workspace_setup",
+        "it_setup",
+        "building_access"
+      ],
+      "accessPermissions": {
+        "default": "full",
+        "canOverride": false
+      }
+    }
+  ],
+
+  "candidateDatabase": [
+    {
+      "id": "cand_98765",
+      "personalInfo": {
+        "name": "Nafees Ahamed K",
+        "email": "nafees.ahamed@email.com",
+        "phone": "+971-50-123-4567",
+        "alternatePhone": "+971-50-987-6543",
+        "dateOfBirth": "1995-03-15",
+        "nationality": "Indian",
+        "gender": "Male",
+        "maritalStatus": "Single"
+      },
+      "address": {
+        "current": {
+          "street": "Al Barsha 1",
+          "city": "Dubai",
+          "emirate": "Dubai",
+          "country": "UAE",
+          "postalCode": "00000"
+        },
+        "permanent": {
+          "street": "MG Road",
+          "city": "Bangalore",
+          "state": "Karnataka",
+          "country": "India",
+          "postalCode": "560001"
+        }
+      },
+      "applicationInfo": {
+        "requisitionId": "REQ-2025-EE-001",
+        "position": "Electronics Engineer",
+        "department": "Engineering",
+        "appliedDate": "2025-12-08T14:30:00.000Z",
+        "source": "LinkedIn",
+        "referralCode": null,
+        "status": "screening"
+      },
+      "education": [
+        {
+          "degree": "Bachelor of Engineering",
+          "major": "Electronics and Communication",
+          "institution": "University of Dubai",
+          "location": "Dubai, UAE",
+          "graduationYear": 2019,
+          "gpa": 3.7,
+          "honors": "First Class with Distinction"
+        }
+      ],
+      "experience": [
+        {
+          "company": "Tech Corp Dubai",
+          "position": "Electronics Engineer",
+          "location": "Dubai, UAE",
+          "startDate": "2022-01-01",
+          "endDate": null,
+          "isCurrent": true,
+          "duration": "2.5 years",
+          "responsibilities": [
+            "Design and develop PCB circuits for IoT devices",
+            "Work on embedded systems programming in C/C++",
+            "Conduct testing and troubleshooting of electronic systems",
+            "Lead team of 2 junior engineers"
+          ]
+        },
+        {
+          "company": "Innovation Labs",
+          "position": "Embedded Systems Developer",
+          "location": "Dubai, UAE",
+          "startDate": "2020-06-01",
+          "endDate": "2021-12-31",
+          "isCurrent": false,
+          "duration": "1.5 years",
+          "responsibilities": [
+            "Developed firmware for embedded systems",
+            "Worked on IoT device prototypes",
+            "Conducted hardware-software integration"
+          ]
+        }
+      ],
+      "skills": {
+        "technical": [
+          { "name": "PCB Design", "level": "Expert", "yearsOfExperience": 3.5 },
+          { "name": "Embedded Systems", "level": "Advanced", "yearsOfExperience": 3.5 },
+          { "name": "C/C++ Programming", "level": "Advanced", "yearsOfExperience": 4 },
+          { "name": "Circuit Analysis", "level": "Expert", "yearsOfExperience": 5 },
+          { "name": "IoT Development", "level": "Intermediate", "yearsOfExperience": 1 },
+          { "name": "Altium Designer", "level": "Expert", "yearsOfExperience": 3 },
+          { "name": "Eagle CAD", "level": "Advanced", "yearsOfExperience": 2 }
+        ],
+        "soft": [
+          { "name": "Team Leadership", "level": "Good" },
+          { "name": "Communication", "level": "Excellent" },
+          { "name": "Problem Solving", "level": "Excellent" },
+          { "name": "Time Management", "level": "Good" }
+        ]
+      },
+      "compensation": {
+        "currentSalary": {
+          "currency": "AED",
+          "amount": 12000,
+          "frequency": "monthly"
+        },
+        "expectedSalary": {
+          "currency": "AED",
+          "amount": 18000,
+          "frequency": "monthly"
+        },
+        "noticePeriod": "2 months",
+        "availableFrom": "2026-02-11"
+      },
+      "documents": {
+        "resume": {
+          "filename": "Nafees_Ahamed_Resume.pdf",
+          "uploadedAt": "2025-12-08T14:30:00.000Z",
+          "url": "/documents/cand_98765/resume.pdf",
+          "size": 245760
+        },
+        "portfolio": {
+          "filename": "Portfolio_Projects.pdf",
+          "uploadedAt": "2025-12-08T14:35:00.000Z",
+          "url": "/documents/cand_98765/portfolio.pdf",
+          "size": 5242880
+        }
+      },
+      "aiScoring": {
+        "overallScore": 94,
+        "breakdown": {
+          "technicalSkills": 96,
+          "experienceLevel": 92,
+          "educationFit": 100,
+          "locationMatch": 90,
+          "salaryAlignment": 85,
+          "cultureFit": 94
+        },
+        "recommendation": "Strong Shortlist",
+        "recommendationReason": "Top 5% candidate. Excellent technical fit with minor salary negotiation needed.",
+        "risks": [
+          {
+            "type": "salary",
+            "severity": "medium",
+            "description": "Salary expectations 15% above budget",
+            "mitigation": "Negotiate during interview or offer career growth path"
+          },
+          {
+            "type": "iot_experience",
+            "severity": "low",
+            "description": "Limited IoT exposure (only 1 project)",
+            "mitigation": "Provide training or mentorship in first 3 months"
+          }
+        ],
+        "strengths": [
+          "Expert-level PCB design skills",
+          "Strong embedded systems background",
+          "Perfect educational match",
+          "Team leadership experience",
+          "Active in tech community (2 published articles)"
+        ]
+      },
+      "screening": {
+        "status": "in_progress",
+        "passGenerated": true,
+        "passReference": "PASS-2025-SCR-001234",
+        "formsCompleted": false,
+        "assessmentsCompleted": false,
+        "documentsUploaded": false
+      },
+      "timeline": [
+        {
+          "date": "2025-12-08T14:30:00.000Z",
+          "action": "Application Submitted",
+          "actor": "Candidate",
+          "details": "Applied via LinkedIn"
+        },
+        {
+          "date": "2025-12-09T10:00:00.000Z",
+          "action": "AI Scoring Completed",
+          "actor": "System",
+          "details": "Overall score: 94%"
+        },
+        {
+          "date": "2025-12-10T15:30:00.000Z",
+          "action": "Shortlisted by Manager",
+          "actor": "Hiring Manager",
+          "details": "Moved to HR Screening stage"
+        },
+        {
+          "date": "2025-12-11T10:30:00.000Z",
+          "action": "Screening Pass Generated",
+          "actor": "HR Admin",
+          "details": "PASS-2025-SCR-001234 created and sent"
+        }
+      ]
+    },
+    {
+      "id": "cand_98766",
+      "personalInfo": {
+        "name": "Sarah Johnson",
+        "email": "sarah.johnson@email.com",
+        "phone": "+971-50-234-5678",
+        "alternatePhone": null,
+        "dateOfBirth": "1992-07-22",
+        "nationality": "American",
+        "gender": "Female",
+        "maritalStatus": "Married"
+      },
+      "address": {
+        "current": {
+          "street": "Al Reem Island",
+          "city": "Abu Dhabi",
+          "emirate": "Abu Dhabi",
+          "country": "UAE",
+          "postalCode": "00000"
+        }
+      },
+      "applicationInfo": {
+        "requisitionId": "REQ-2025-EE-001",
+        "position": "Electronics Engineer",
+        "department": "Engineering",
+        "appliedDate": "2025-12-07T09:15:00.000Z",
+        "source": "Indeed",
+        "referralCode": null,
+        "status": "interview_ready"
+      },
+      "education": [
+        {
+          "degree": "Master of Science",
+          "major": "Electrical Engineering",
+          "institution": "MIT",
+          "location": "Cambridge, USA",
+          "graduationYear": 2017,
+          "gpa": 3.9,
+          "honors": "Summa Cum Laude"
+        },
+        {
+          "degree": "Bachelor of Science",
+          "major": "Electronics Engineering",
+          "institution": "Stanford University",
+          "location": "Stanford, USA",
+          "graduationYear": 2015,
+          "gpa": 3.8,
+          "honors": "Magna Cum Laude"
+        }
+      ],
+      "experience": [
+        {
+          "company": "Advanced Electronics UAE",
+          "position": "Senior Electronics Engineer",
+          "location": "Abu Dhabi, UAE",
+          "startDate": "2020-03-01",
+          "endDate": null,
+          "isCurrent": true,
+          "duration": "5 years",
+          "responsibilities": [
+            "Lead PCB design and IoT integration projects",
+            "Manage team of 5 engineers",
+            "Client presentations and technical consultations",
+            "R&D for new product lines"
+          ]
+        }
+      ],
+      "skills": {
+        "technical": [
+          { "name": "PCB Design", "level": "Expert", "yearsOfExperience": 8 },
+          { "name": "IoT Systems", "level": "Expert", "yearsOfExperience": 5 },
+          { "name": "Embedded Systems", "level": "Advanced", "yearsOfExperience": 7 },
+          { "name": "Team Leadership", "level": "Expert", "yearsOfExperience": 4 }
+        ]
+      },
+      "compensation": {
+        "currentSalary": {
+          "currency": "AED",
+          "amount": 22000,
+          "frequency": "monthly"
+        },
+        "expectedSalary": {
+          "currency": "AED",
+          "amount": 25000,
+          "frequency": "monthly"
+        },
+        "noticePeriod": "3 months"
+      },
+      "aiScoring": {
+        "overallScore": 88,
+        "breakdown": {
+          "technicalSkills": 85,
+          "experienceLevel": 95,
+          "educationFit": 100,
+          "locationMatch": 85,
+          "salaryAlignment": 70,
+          "cultureFit": 85
+        },
+        "recommendation": "Recommend Interview",
+        "recommendationReason": "Strong experience and leadership. Notice period and salary are concerns."
+      },
+      "screening": {
+        "status": "completed",
+        "passGenerated": true,
+        "passReference": "PASS-2025-CAN-001235",
+        "formsCompleted": true,
+        "assessmentsCompleted": true,
+        "documentsUploaded": true
+      }
+    }
+  ],
+
+  "systemConfiguration": {
+    "workflow": {
+      "autoApprovePass": true,
+      "requireManagerApproval": false,
+      "autoExpireAfterDeadline": true,
+      "trackPassActivity": true,
+      "sendReminderBeforeExpiry": true,
+      "reminderDaysBefore": 3,
+      "maxPassDuration": 90,
+      "defaultPassDuration": 30
+    },
+    "notifications": {
+      "emailEnabled": true,
+      "smsEnabled": true,
+      "pushEnabled": false,
+      "emailProvider": "SendGrid",
+      "smsProvider": "Twilio",
+      "defaultSender": "hr@company.com",
+      "templates": {
+        "passGenerated": "email_pass_generated_v1",
+        "passExpiring": "email_pass_expiring_v1",
+        "passExpired": "email_pass_expired_v1",
+        "reminderIncomplete": "email_reminder_incomplete_v1"
+      }
+    },
+    "security": {
+      "encryptBackendURLs": true,
+      "urlExpiryEnabled": true,
+      "ipWhitelistEnabled": false,
+      "maxFailedAttempts": 5,
+      "lockoutDuration": 3600,
+      "requireTwoFactor": false,
+      "adminPanelAccess": "Ctrl+Shift+Alt+X",
+      "sessionTimeout": 1800
+    },
+    "integration": {
+      "candidateDatabaseConnected": true,
+      "hrmsConnected": false,
+      "emailServiceConnected": true,
+      "smsServiceConnected": true,
+      "analyticsEnabled": true,
+      "backupEnabled": true,
+      "backupFrequency": "daily",
+      "backupRetention": 30
+    }
+  },
+
+  "activityLogs": [
+    {
+      "id": "log_001",
+      "timestamp": "2025-12-11T10:30:00.000Z",
+      "action": "PASS_GENERATED",
+      "actor": "hr_admin_001",
+      "actorName": "HR Admin",
+      "targetType": "pass",
+      "targetId": "pm_001234",
+      "targetReference": "PASS-2025-SCR-001234",
+      "details": {
+        "candidate": "Nafees Ahamed K",
+        "passType": "screening",
+        "autoEmail": true,
+        "autoSMS": true
+      },
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0..."
+    },
+    {
+      "id": "log_002",
+      "timestamp": "2025-12-11T08:45:00.000Z",
+      "action": "PASS_ACCESSED",
+      "actor": "cand_98766",
+      "actorName": "Sarah Johnson",
+      "targetType": "pass",
+      "targetId": "pm_001235",
+      "targetReference": "PASS-2025-CAN-001235",
+      "details": {
+        "action": "form_submission",
+        "formType": "background_check"
+      },
+      "ipAddress": "185.123.45.67",
+      "userAgent": "Mozilla/5.0..."
+    },
+    {
+      "id": "log_003",
+      "timestamp": "2025-12-11T09:00:00.000Z",
+      "action": "REMINDER_SENT",
+      "actor": "system",
+      "actorName": "System Automation",
+      "targetType": "pass",
+      "targetId": "pm_001235",
+      "targetReference": "PASS-2025-CAN-001235",
+      "details": {
+        "reminderType": "incomplete_tasks",
+        "channel": "email",
+        "tasksRemaining": 1
+      },
+      "ipAddress": "system",
+      "userAgent": "system"
+    },
+    {
+      "id": "log_004",
+      "timestamp": "2025-12-10T15:30:00.000Z",
+      "action": "CANDIDATE_SHORTLISTED",
+      "actor": "hiring_manager_001",
+      "actorName": "Hiring Manager",
+      "targetType": "candidate",
+      "targetId": "cand_98765",
+      "details": {
+        "fromStage": "initial_review",
+        "toStage": "hr_screening",
+        "decision": "shortlist",
+        "notes": "Strong technical background, proceed with screening"
+      },
+      "ipAddress": "192.168.1.105",
+      "userAgent": "Mozilla/5.0..."
+    }
+  ],
+
+  "analytics": {
+    "passGeneration": {
+      "total": 1247,
+      "byType": {
+        "screening": 542,
+        "candidate": 385,
+        "onboarding": 215,
+        "interview": 85,
+        "assessment": 20
+      },
+      "byStatus": {
+        "active": 342,
+        "expired": 905,
+        "revoked": 0
+      },
+      "byMonth": {
+        "2025-12": 47,
+        "2025-11": 105,
+        "2025-10": 98
+      }
+    },
+    "completion": {
+      "averageCompletionTime": 4.2,
+      "completionRate": 76,
+      "abandonmentRate": 24,
+      "averageAccessCount": 5.3
+    },
+    "performance": {
+      "averageResponseTime": 850,
+      "uptime": 99.8,
+      "errorRate": 0.2
+    },
+    "recruitment": {
+      "timeToHire": {
+        "average": 12,
+        "withPass": 8,
+        "withoutPass": 18
+      },
+      "candidateSatisfaction": 4.6,
+      "hrEfficiencyGain": 67
+    }
+  },
+
+  "emailTemplates": [
+    {
+      "id": "email_pass_generated_v1",
+      "name": "Pass Generated - Welcome Email",
+      "subject": "Your {{passType}} Pass is Ready - {{position}}",
+      "body": "Dear {{candidateName}},\n\nWelcome to the next step in your recruitment journey!\n\nYour {{passType}} pass has been generated and is ready to use.\n\n**Pass Reference:** {{passReference}}\n**Valid Until:** {{expiryDate}}\n**Access Level:** {{accessLevel}}\n\n**What's Included:**\n{{#each modules}}\n- {{this.name}}\n{{/each}}\n\n**Next Steps:**\n1. Click the secure link below to access your pass\n2. Complete all required forms and assessments\n3. Upload any requested documents\n4. Track your progress through the dashboard\n\n**Access Your Pass:**\n{{secureAccessURL}}\n\n**Important Notes:**\n- This link is unique to you and should not be shared\n- Please complete all tasks before {{expiryDate}}\n- You will receive reminders as the deadline approaches\n\nIf you have any questions, please don't hesitate to contact us at hr@company.com.\n\nBest regards,\nHR Team\nCompany Name",
+      "variables": ["candidateName", "passType", "passReference", "position", "expiryDate", "accessLevel", "modules", "secureAccessURL"],
+      "isActive": true
+    },
+    {
+      "id": "email_pass_expiring_v1",
+      "name": "Pass Expiring Soon - Reminder",
+      "subject": "Reminder: Your {{passType}} Pass Expires in {{daysRemaining}} Days",
+      "body": "Dear {{candidateName}},\n\nThis is a friendly reminder that your {{passType}} pass will expire soon.\n\n**Pass Reference:** {{passReference}}\n**Expires On:** {{expiryDate}}\n**Days Remaining:** {{daysRemaining}}\n\n**Incomplete Tasks:**\n{{#each incompleteTasks}}\n- {{this.name}} ({{this.status}})\n{{/each}}\n\nPlease complete all pending tasks before the expiry date to continue your application process.\n\n**Access Your Pass:**\n{{secureAccessURL}}\n\nBest regards,\nHR Team",
+      "variables": ["candidateName", "passType", "passReference", "expiryDate", "daysRemaining", "incompleteTasks", "secureAccessURL"],
+      "isActive": true
+    }
+  ],
+
+  "backupMetadata": {
+    "lastBackupDate": "2025-12-11T00:00:00.000Z",
+    "backupFrequency": "daily",
+    "backupRetentionDays": 30,
+    "backupLocation": "/backups/pass-system/",
+    "backupSize": "15.7 MB",
+    "totalBackups": 30,
+    "oldestBackup": "2025-11-11T00:00:00.000Z",
+    "newestBackup": "2025-12-11T00:00:00.000Z",
+    "autoBackupEnabled": true,
+    "nextBackupScheduled": "2025-12-12T00:00:00.000Z"
+  }
+}
