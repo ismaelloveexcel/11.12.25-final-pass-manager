@@ -7,179 +7,944 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* iOS-like font */
-            background: linear-gradient(to bottom, #FFFFFF, #F8F8F8); /* Subtle gradient for blur visibility */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #FFFFFF, #F8F8F8);
             color: #000000;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
         }
         .card, .modal-content, .header, .accordion-button {
-            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white for glass */
-            backdrop-filter: blur(10px); /* iOS Liquid Glass effect */
-            border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle gray border */
-            border-radius: 20px; /* Rounded like iOS */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); /* Soft depth */
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
         }
         .form-control, .btn {
             border-radius: 10px;
-            border: 1px solid #E0E0E0; /* Light gray */
+            border: 1px solid #E0E0E0;
         }
-        .btn-primary { background: #E0E0E0; color: #000; border: none; } /* Gray for minimalism */
-        .btn-success { background: #4CAF50; color: #FFF; } /* Green only for approvals */
-        .btn-danger { background: #F44336; color: #FFF; } /* Red only for rejects */
-        .btn-warning { background: #FFEB3B; color: #000; } /* Yellow only for pendings */
+        .btn-primary { background: #E0E0E0; color: #000; border: none; }
+        .btn-success { background: #4CAF50; color: #FFF; }
+        .btn-danger { background: #F44336; color: #FFF; }
+        .btn-warning { background: #FFEB3B; color: #000; }
         .btn-secondary { background: #E0E0E0; color: #000; }
         .status-badge {
             padding: 5px 10px;
             border-radius: 20px;
             font-weight: bold;
+            font-size: 0.85rem;
         }
-        .badge-pending { background: #FFEB3B; color: #000; } /* Yellow badge */
-        .badge-approved { background: #4CAF50; color: #FFF; } /* Green badge */
-        .risk-indicator {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
+        .badge-pending { background: #FFEB3B; color: #000; }
+        .badge-approved { background: #4CAF50; color: #FFF; }
+        .badge-urgent { background: #F44336; color: #FFF; animation: pulse 2s infinite; }
+        .badge-warning { background: #FF9800; color: #FFF; }
+
+        /* SLA Indicators */
+        .sla-overdue { border-left: 4px solid #F44336; }
+        .sla-due-soon { border-left: 4px solid #FF9800; }
+        .sla-on-track { border-left: 4px solid #4CAF50; }
+
+        /* Priority Dashboard */
+        .priority-dashboard {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        .urgent-item {
+            background: #FFF3E0;
+            border-left: 3px solid #FF9800;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .urgent-item:hover { background: #FFE0B2; }
+
+        /* Keyboard shortcuts hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
             border-radius: 10px;
-            padding: 10px;
+            font-size: 0.85rem;
+            z-index: 2000;
         }
-        .risk-medium { border: 1px solid #FFEB3B; } /* Subtle yellow border */
-        .alert { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid #FFEB3B; color: #000; }
-        .modal { background: rgba(0, 0, 0, 0.2); } /* Soft overlay */
-        @media (max-width: 768px) { body { padding: 10px; } .stages { flex-direction: column; } }
+
+        /* Quick action buttons - larger, more prominent */
+        .quick-actions {
+            position: sticky;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        /* Focus mode */
+        .focus-mode .candidate-card:not(.active-card) {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Time tracking badges */
+        .time-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+        }
+        .time-critical { background: #FFCDD2; color: #C62828; }
+        .time-warning { background: #FFF9C4; color: #F57F17; }
+        .time-ok { background: #C8E6C9; color: #2E7D32; }
+
+        /* Bulk selection */
+        .candidate-card.selected {
+            border: 2px solid #2196F3;
+            background: rgba(33, 150, 243, 0.05);
+        }
+
+        /* Auto-advance notification */
+        .auto-advance-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Template picker */
+        .template-picker {
+            background: #F5F5F5;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        /* One-click action combos */
+        .combo-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .stages { flex-direction: column; }
+            .keyboard-hint { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<!-- Dark Mode Toggle (optional, but minimal - can remove if not needed) -->
-<button class="btn btn-secondary mb-3" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">Toggle Dark Mode</button>
+<!-- Keyboard Shortcuts Hint -->
+<div class="keyboard-hint" id="keyboardHint">
+    Press <kbd>?</kbd> for shortcuts | <kbd>S</kbd>=Shortlist | <kbd>R</kbd>=Reject | <kbd>N</kbd>=Next | <kbd>F</kbd>=Focus Mode
+</div>
+
+<!-- Priority Dashboard (Sticky Top) -->
+<div class="priority-dashboard card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">🚨 TODAY'S URGENT ITEMS (5)</h5>
+        <div>
+            <button class="btn btn-sm btn-success" onclick="bulkProcessUrgent()">⚡ Process All Urgent</button>
+            <button class="btn btn-sm btn-secondary" onclick="toggleFocusMode()">🎯 Focus Mode</button>
+        </div>
+    </div>
+    <div class="urgent-list">
+        <div class="urgent-item" onclick="jumpToCandidate(1)">
+            <strong>3 Candidates</strong> - Waiting 72+ hours in HR Screening <span class="badge badge-urgent">CRITICAL</span>
+        </div>
+        <div class="urgent-item" onclick="jumpToCandidate(5)">
+            <strong>Manager Review</strong> - 2 JDs pending approval (48h overdue) <span class="badge badge-warning">URGENT</span>
+        </div>
+        <div class="urgent-item" onclick="jumpToCandidate(12)">
+            <strong>Follow-ups Due</strong> - 5 candidates need response by EOD <span class="badge badge-warning">URGENT</span>
+        </div>
+        <div class="urgent-item">
+            <strong>Interview Scheduling</strong> - 3 approved candidates ready to schedule <span class="badge badge-pending">ACTION NEEDED</span>
+        </div>
+        <div class="urgent-item">
+            <strong>Daily Goal</strong> - Process 8 more candidates to meet target (15/23 done) <span class="badge bg-info text-white">67%</span>
+        </div>
+    </div>
+</div>
 
 <!-- Header with Backend Access -->
 <div class="header card mb-4">
-    <h2>SCREENING – Electronics Engineer (REQ-2025-EE-001)</h2>
-    <button class="btn btn-primary float-end" onclick="openBackendPanel()">HR Backend Panel</button>
-    <div class="stages d-flex flex-wrap gap-3">
-        <div class="stage active card p-2" onclick="showStage(1)" aria-label="Initial Review Stage">○ Initial Review (23)</div>
-        <div class="stage card p-2" onclick="showStage(2)" aria-label="HR Screening Stage">○ HR Screening (8)</div>
-        <div class="stage card p-2" onclick="showStage(3)" aria-label="Interview Ready Stage">○ Interview Ready (3)</div>
+    <div class="d-flex justify-content-between align-items-center p-3">
+        <div>
+            <h2>SCREENING – Electronics Engineer (REQ-2025-EE-001)</h2>
+            <small class="text-muted">Avg. Time per Stage: 2.3 days | Target: 1.5 days</small>
+        </div>
+        <div>
+            <button class="btn btn-warning me-2" onclick="openDailyChecklist()">✓ Daily Checklist (3/8)</button>
+            <button class="btn btn-primary" onclick="openBackendPanel()">HR Backend Panel</button>
+        </div>
+    </div>
+    <div class="stages d-flex flex-wrap gap-3 p-3">
+        <div class="stage active card p-2" onclick="showStage(1)" aria-label="Initial Review Stage">
+            ○ Initial Review (23)
+            <small class="d-block text-danger">5 overdue</small>
+        </div>
+        <div class="stage card p-2" onclick="showStage(2)" aria-label="HR Screening Stage">
+            ○ HR Screening (8)
+            <small class="d-block text-warning">3 critical</small>
+        </div>
+        <div class="stage card p-2" onclick="showStage(3)" aria-label="Interview Ready Stage">
+            ○ Interview Ready (3)
+            <small class="d-block text-success">All ready</small>
+        </div>
     </div>
 </div>
 
 <!-- Stage 1: Initial Review -->
 <div id="stage1" class="container">
+    <!-- Smart Filters with Auto-sort -->
     <div class="top-bar d-flex gap-3 mb-3">
-        <input type="search" class="form-control" placeholder="Search…" aria-label="Search candidates">
-        <select class="form-select"><option>All Sources</option><option>Pending Approvals</option></select>
-        <select class="form-select"><option>Latest</option><option>Pending First</option></select>
+        <input type="search" class="form-control" placeholder="🔍 Search (Ctrl+K)..." aria-label="Search candidates">
+        <select class="form-select" onchange="smartFilter(this.value)">
+            <option value="urgent">🔥 Urgent First (Recommended)</option>
+            <option>Latest</option>
+            <option>Pending Manager</option>
+            <option>High Score First</option>
+            <option>All Sources</option>
+        </select>
+        <button class="btn btn-primary" onclick="enableBulkMode()">
+            ☑️ Bulk Select (0)
+        </button>
     </div>
-    <div class="alert alert-warning mb-3">⚠️ 2 Requisitions Pending – No JD/Approval Attached [View Pending]</div>
-    <div class="candidate-card card">
+
+    <!-- Alert with Auto-follow-up -->
+    <div class="alert alert-warning mb-3">
+        ⚠️ 2 Requisitions Pending – No JD/Approval Attached
+        <button class="btn btn-sm btn-warning ms-2" onclick="autoRemindManagers()">📧 Auto-Remind All Managers</button>
+        <button class="btn btn-sm btn-secondary" onclick="viewPending()">View Pending</button>
+    </div>
+
+    <!-- CANDIDATE CARD 1 - URGENT (72h+) -->
+    <div class="candidate-card card mb-3 sla-overdue" data-candidate-id="1">
         <div class="card-body">
-            <h5>#1 ⭐ Nafees Ahamed K  Profile Match Score: 94% [LinkedIn] <span class="status-badge badge-pending">Pending Manager Input</span></h5>
-            <p>Electronics Engineer • 3+ years • Bachelor's • Dubai • Applied 2 days ago</p>
-            <p>Key Observations: Strong PCB and embedded background; limited IoT exposure.</p>
-            <!-- JD Workflow Section -->
-            <div class="mt-3">
-                <h6>JD Workflow</h6>
-                <p>HR Draft: [View Draft JD] Status: <span class="status-badge badge-pending">Pending Manager Review</span></p>
-                <button class="btn btn-primary" onclick="notifyManager()">Notify Manager for Approval</button>
-                <div class="d-flex gap-2 mt-2">
-                    <button class="btn btn-success">Approve JD</button>
-                    <button class="btn btn-danger">Reject/Revise JD</button>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
+                    <h5 class="d-inline">
+                        #1 ⭐ Nafees Ahamed K
+                        <span class="status-badge badge-urgent">OVERDUE 72h</span>
+                        <span class="time-badge time-critical">⏰ Applied 3 days ago</span>
+                    </h5>
+                    <p class="mb-1">Profile Match: 94% [LinkedIn] • Electronics Engineer • 3+ years • Bachelor's • Dubai</p>
+                    <p class="mb-2"><strong>Key:</strong> Strong PCB/embedded; limited IoT. <strong>Risk:</strong> High salary expectations.</p>
                 </div>
-                <textarea class="form-control mt-2" placeholder="Add Review Comments..."></textarea>
+                <div class="text-end">
+                    <small class="d-block text-muted">Last Action: 72h ago</small>
+                    <small class="d-block text-danger">⚠️ SLA breach</small>
+                </div>
             </div>
-            <button class="btn btn-primary mt-3">View Profile</button>
-            <button class="btn btn-primary mt-3" onclick="openQuickPreview()">Quick Preview ↗️</button>
+
+            <!-- JD Workflow - Collapsed by default for speed -->
+            <details class="mt-2">
+                <summary><strong>JD Workflow</strong> <span class="badge badge-pending">Pending Manager (48h)</span></summary>
+                <div class="mt-2 p-2 bg-light rounded">
+                    <p class="mb-2">HR Draft: <a href="#">View Draft JD</a></p>
+                    <button class="btn btn-sm btn-warning" onclick="autoRemindManager(1)">📧 Auto-Remind Manager</button>
+                    <button class="btn btn-sm btn-success">✓ Approve JD</button>
+                    <button class="btn btn-sm btn-danger">✗ Reject/Revise</button>
+                    <textarea class="form-control mt-2" placeholder="Quick note..."></textarea>
+                </div>
+            </details>
+
+            <!-- QUICK DECISION BUTTONS (Prominent) -->
             <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-success">✓ Shortlist</button>
-                <button class="btn btn-danger" onclick="openRejectionModal()">✗ Reject</button>
-                <button class="btn btn-warning">⏸ Maybe</button>
+                <button class="btn btn-success combo-btn" onclick="shortlistAndNotify(1)">
+                    ✓ Shortlist + Send Package (S)
+                </button>
+                <button class="btn btn-danger" onclick="quickReject(1)">
+                    ✗ Reject (R)
+                </button>
+                <button class="btn btn-warning" onclick="markMaybe(1)">
+                    ⏸ Maybe (M)
+                </button>
+                <button class="btn btn-secondary" onclick="quickPreview(1)">
+                    👁️ Preview
+                </button>
+            </div>
+
+            <!-- Templates for quick actions -->
+            <details class="mt-2">
+                <summary>Use Template</summary>
+                <div class="template-picker">
+                    <select class="form-select form-select-sm" onchange="applyTemplate(this.value, 1)">
+                        <option>Select rejection template...</option>
+                        <option value="exp">Insufficient experience</option>
+                        <option value="skill">Skill mismatch</option>
+                        <option value="location">Location constraint</option>
+                        <option value="overqual">Overqualified</option>
+                        <option value="salary">Salary expectations</option>
+                    </select>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- CANDIDATE CARD 2 - HIGH PRIORITY -->
+    <div class="candidate-card card mb-3 sla-due-soon" data-candidate-id="2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
+                    <h5 class="d-inline">
+                        #2 Sarah Johnson
+                        <span class="status-badge badge-warning">DUE 24h</span>
+                        <span class="time-badge time-warning">⏰ Applied 1 day ago</span>
+                    </h5>
+                    <p class="mb-1">Profile Match: 88% [Indeed] • Electronics Engineer • 5+ years • Master's • Abu Dhabi</p>
+                    <p class="mb-2"><strong>Key:</strong> Strong IoT & PCB. Leadership experience. <strong>Risk:</strong> Notice period 3mo.</p>
+                </div>
+                <div class="text-end">
+                    <small class="d-block text-muted">Last Action: 24h ago</small>
+                    <small class="d-block text-warning">⚠️ Due soon</small>
+                </div>
+            </div>
+
+            <!-- Quick decision buttons -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="shortlistAndNotify(2)">
+                    ✓ Shortlist + Send Package (S)
+                </button>
+                <button class="btn btn-danger" onclick="quickReject(2)">✗ Reject (R)</button>
+                <button class="btn btn-warning" onclick="markMaybe(2)">⏸ Maybe (M)</button>
+                <button class="btn btn-secondary" onclick="quickPreview(2)">👁️ Preview</button>
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-between mt-3">
-        <div>Bulk Actions: (0 selected)</div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-success">Shortlist Selected</button>
-            <button class="btn btn-danger">Reject Selected</button>
-            <button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button>
+
+    <!-- CANDIDATE CARD 3 - ON TRACK -->
+    <div class="candidate-card card mb-3 sla-on-track" data-candidate-id="3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
+                    <h5 class="d-inline">
+                        #3 Ahmed Al-Rashid
+                        <span class="status-badge badge-pending">NEW</span>
+                        <span class="time-badge time-ok">⏰ Applied 4 hours ago</span>
+                    </h5>
+                    <p class="mb-1">Profile Match: 91% [LinkedIn] • Electronics Engineer • 4 years • Bachelor's • Sharjah</p>
+                    <p class="mb-2"><strong>Key:</strong> Perfect tech match. Local. <strong>Risk:</strong> None identified.</p>
+                </div>
+                <div class="text-end">
+                    <small class="d-block text-success">✓ On track</small>
+                </div>
+            </div>
+
+            <!-- Quick decision buttons -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="shortlistAndNotify(3)">
+                    ✓ Shortlist + Send Package (S)
+                </button>
+                <button class="btn btn-danger" onclick="quickReject(3)">✗ Reject (R)</button>
+                <button class="btn btn-warning" onclick="markMaybe(3)">⏸ Maybe (M)</button>
+                <button class="btn btn-secondary" onclick="quickPreview(3)">👁️ Preview</button>
+            </div>
         </div>
-        <div>Showing 23 candidates</div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="quick-actions card">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong>Bulk Actions:</strong> <span id="selectedCount">0 selected</span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success" onclick="bulkShortlist()">✓ Shortlist All + Send Packages</button>
+                <button class="btn btn-danger" onclick="bulkReject()">✗ Reject All</button>
+                <button class="btn btn-secondary" onclick="exportCSV()">📥 Export CSV</button>
+            </div>
+            <div>
+                Showing 23 candidates • <strong>5 need urgent action</strong>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Stage 2: HR Screening -->
 <div id="stage2" style="display:none;">
-    <!-- Similar updates: cards with blur, minimal colors -->
-    <div class="card mb-3">
+    <div class="alert alert-danger mb-3">
+        🚨 <strong>3 CRITICAL:</strong> Candidates waiting 72+ hours for screening package
+        <button class="btn btn-sm btn-danger ms-2" onclick="sendAllPackages()">⚡ Send All Packages Now</button>
+    </div>
+
+    <div class="card mb-3 sla-overdue">
         <div class="card-body">
-            <h5>Candidate: Nafees Ahamed K  Status: PENDING <span class="status-badge badge-pending">Pending Data: Salary Approval</span></h5>
-            <p>Shortlisted 2 hours ago</p>
-            <ul class="list-group list-group-flush">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>Candidate: Nafees Ahamed K
+                        <span class="status-badge badge-urgent">CRITICAL - 72h</span>
+                        <span class="time-badge time-critical">⏰ Shortlisted 3 days ago</span>
+                    </h5>
+                    <p class="mb-2">Status: Package not sent yet</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-danger">Auto-reminder sent: 24h ago</small>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush mb-3">
                 <li class="list-group-item">☐ Candidate Information Form – Not sent</li>
                 <li class="list-group-item">☐ Soft Skills Assessment – Not sent</li>
                 <li class="list-group-item">☐ Technical Assessment – Required</li>
             </ul>
-            <div class="progress mt-3" style="height: 10px; background: #E0E0E0;">
-                <div class="progress-bar" style="width: 0%; background: #808080;"></div>
+
+            <div class="progress mb-3" style="height: 15px;">
+                <div class="progress-bar bg-danger" style="width: 0%">0% Complete</div>
             </div>
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary">📧 Send Screening Package</button>
-                <button class="btn btn-primary">📞 Call</button>
-                <button class="btn btn-primary">✉️ Email</button>
+
+            <!-- ONE-CLICK COMBO ACTIONS -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-success combo-btn" onclick="sendFullPackage(1)">
+                    ⚡ Send Full Package + Set 48h Reminder
+                </button>
+                <button class="btn btn-warning" onclick="callCandidate(1)">📞 Quick Call</button>
+                <button class="btn btn-secondary" onclick="requestDocs(1)">📎 Request Docs</button>
             </div>
-            <button class="btn btn-primary mt-2">📎 Request Additional Docs</button>
+
+            <!-- Template email preview -->
+            <details class="mt-2">
+                <summary>Preview Email</summary>
+                <div class="p-2 bg-light rounded">
+                    <small>Subject: Next Steps - Electronics Engineer Position</small>
+                    <p class="mb-0"><small>Dear Nafees,<br>Thank you for your interest. Please complete the attached forms by [DATE]...</small></p>
+                    <button class="btn btn-sm btn-primary mt-2">Edit Template</button>
+                </div>
+            </details>
         </div>
+    </div>
+
+    <!-- Candidate IN PROGRESS -->
+    <div class="card mb-3 sla-due-soon">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>Candidate: Sarah Johnson
+                        <span class="status-badge badge-pending">IN PROGRESS</span>
+                        <span class="time-badge time-ok">⏰ Package sent 8h ago</span>
+                    </h5>
+                </div>
+                <div class="text-end">
+                    <small class="text-success">✓ Responding actively</small>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">✓ Candidate Information Form – Completed (2h ago)</li>
+                <li class="list-group-item">🔄 Soft Skills Assessment – In progress (40% done)</li>
+                <li class="list-group-item">☐ Technical Assessment – Not started</li>
+            </ul>
+
+            <div class="progress mb-3" style="height: 15px;">
+                <div class="progress-bar bg-warning" style="width: 47%">47% Complete</div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-success" onclick="clearForInterview(2)" disabled>✓ Clear for Interview (Not Ready)</button>
+                <button class="btn btn-warning" onclick="sendReminder(2)">📧 Send Gentle Reminder</button>
+                <button class="btn btn-secondary" onclick="viewProfile(2)">📊 View Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- READY TO CLEAR -->
+    <div class="card mb-3 sla-on-track" style="border: 2px solid #4CAF50;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>Candidate: Ahmed Al-Rashid
+                        <span class="status-badge badge-approved">COMPLETE ✓</span>
+                        <span class="time-badge time-ok">⏰ Completed 1h ago</span>
+                    </h5>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">✓ Candidate Information Form – Completed</li>
+                <li class="list-group-item">✓ Soft Skills Assessment – 85/100</li>
+                <li class="list-group-item">✓ Technical Assessment – 92/100</li>
+            </ul>
+
+            <div class="progress mb-3" style="height: 15px;">
+                <div class="progress-bar bg-success" style="width: 100%">100% Complete</div>
+            </div>
+
+            <!-- ONE-CLICK ADVANCE -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-success combo-btn" onclick="advanceToInterview(3)">
+                    ⚡ Clear for Interview + Notify Manager
+                </button>
+                <button class="btn btn-secondary" onclick="viewFullProfile(3)">📊 Full Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-advance notification -->
+    <div class="alert alert-info">
+        💡 <strong>Tip:</strong> Enable auto-advance to automatically move completed candidates to Interview Ready stage.
+        <button class="btn btn-sm btn-primary ms-2" onclick="toggleAutoAdvance()">Enable Auto-Advance</button>
     </div>
 </div>
 
 <!-- Stage 3: Interview Ready -->
 <div id="stage3" style="display:none;">
-    <!-- Similar: blur on cards, accordion -->
-    <div class="d-flex gap-3 mb-3">
-        <button class="btn btn-primary">Compare All</button>
-        <button class="btn btn-success">Schedule Interviews</button>
-        <button class="btn btn-secondary">Export</button>
+    <div class="alert alert-success mb-3">
+        ✓ <strong>3 candidates ready for interviews</strong> - All cleared and available
+        <button class="btn btn-sm btn-success ms-2" onclick="bulkSchedule()">📅 Batch Schedule All (Calendly)</button>
     </div>
-    <div class="card">
+
+    <div class="d-flex gap-3 mb-3">
+        <button class="btn btn-primary" onclick="compareAll()">⚖️ Compare All 3</button>
+        <button class="btn btn-success" onclick="scheduleInterviews()">📅 Schedule Interviews</button>
+        <button class="btn btn-secondary" onclick="exportReport()">📊 Export Report</button>
+        <button class="btn btn-warning" onclick="sendToManager()">📧 Send Bundle to Manager</button>
+    </div>
+
+    <div class="card mb-3">
         <div class="card-body">
-            <h5>Overall Score: 90% <span class="status-badge badge-approved">Approved</span></h5>
-            <p>Personal: Name, email, phone, location...</p>
-            <p>Employment: Current salary, expected salary, notice period...</p>
-            <div class="accordion mt-3" id="compHistory">
-                <div class="accordion-item" style="background: transparent; border: none;">
-                    <h2 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#compCollapse">Compensation History (Revisions Tracked)</button></h2>
-                    <div id="compCollapse" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <ul>
-                                <li>Initial Approval: $80k + Benefits (Dec 1, 2025) - Approved by HR</li>
-                                <li>Revision 1: $85k + Enhanced Benefits (Dec 10, 2025) - Reason: Market Adjustment [Add Note]</li>
-                            </ul>
-                            <button class="btn btn-warning">Revise Compensation</button>
-                            <textarea class="form-control mt-2" placeholder="Reason for Revision..."></textarea>
-                        </div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5>Ahmed Al-Rashid
+                        <span class="status-badge badge-approved">READY</span>
+                        <span class="time-badge time-ok">Cleared 1h ago</span>
+                    </h5>
+                    <p><strong>Overall Score: 90%</strong> (Soft Skills: 85 | Technical: 92)</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-success">Top Candidate</span>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>Personal:</strong> ahmed@email.com | +971-XXX | Sharjah | UAE National</p>
+                    <p><strong>Employment:</strong> Current: AED 12k | Expected: AED 15k | Notice: 1 month</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="risk-indicator risk-medium">
+                        <strong>Risk Level: Low (25%)</strong>
+                        <small class="d-block">Salary fit: 5% | Notice: 10% | Location: 0% | Skills: 10%</small>
                     </div>
                 </div>
             </div>
-            <div class="risk-indicator mt-3">Risk Level: Medium (65%)</div>
-            <button class="btn btn-success mt-3">✓ Schedule Interview</button>
+
+            <details class="mt-3">
+                <summary><strong>Compensation History</strong></summary>
+                <div class="accordion-body mt-2 p-2 bg-light rounded">
+                    <ul class="mb-0">
+                        <li>Initial: AED 15k + Benefits (Approved by HR)</li>
+                        <li>Note: Within budget, competitive for market</li>
+                    </ul>
+                </div>
+            </details>
+
+            <!-- ONE-CLICK SCHEDULING -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="scheduleInterview(3)">
+                    ⚡ Schedule Interview + Send Invite
+                </button>
+                <button class="btn btn-secondary" onclick="viewFullProfile(3)">📄 Full Profile</button>
+                <button class="btn btn-warning" onclick="hold(3)">⏸ Hold</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Modals (with glass effect) -->
-<div id="backendPanelModal" class="modal">
-    <div class="modal-content card">
-        <!-- Content as before, with updated styles -->
+<!-- Daily Checklist Modal -->
+<div id="dailyChecklistModal" class="modal" style="display:none;">
+    <div class="modal-content card" style="max-width: 600px; margin: 50px auto; padding: 30px;">
+        <h3>✓ Daily Checklist</h3>
+        <p class="text-muted">Complete these to stay on track</p>
+
+        <div class="list-group">
+            <label class="list-group-item">
+                <input type="checkbox" checked> Process all candidates waiting 48+ hours (5 remaining)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox" checked> Send screening packages to shortlisted candidates (3 sent)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox" checked> Follow up on pending assessments (2 reminded)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Schedule interviews for ready candidates (3 pending)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Send manager reports for pending approvals (2 pending)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Review and respond to candidate queries (0 pending)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Update job board postings (1 needs refresh)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Clear completed candidates to next stage (1 ready)
+            </label>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between">
+            <button class="btn btn-secondary" onclick="closeDailyChecklist()">Close</button>
+            <button class="btn btn-success" onclick="autoCompleteChecklist()">⚡ Auto-Complete Available Tasks</button>
+        </div>
     </div>
 </div>
-<!-- Other modals similarly updated -->
 
-<!-- Scripts remain the same -->
-<script>
-    // Functions as in previous version
-</script>
+<!-- Quick Preview Modal -->
+<div id="quickPreviewModal" class="modal" style="display:none;">
+    <div class="modal-content card" style="max-width: 800px; margin: 20px auto; padding: 20px;">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>Quick Preview - Candidate #<span id="previewCandidateId"></span></h4>
+            <button class="btn btn-sm btn-secondary" onclick="closePreview()">✕ Close</button>
+        </div>
+
+        <div id="previewContent">
+            <!-- Resume preview, highlights, quick decision buttons -->
+            <p><strong>Resume Summary:</strong> 3+ years in electronics engineering...</p>
+            <p><strong>Key Skills:</strong> PCB Design, Embedded Systems, Circuit Analysis</p>
+            <p><strong>Education:</strong> B.Eng Electronics, 2019</p>
+            <p><strong>Current Role:</strong> Electronics Engineer at Tech Corp</p>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-success" onclick="quickShortlist()">✓ Shortlist</button>
+            <button class="btn btn-danger" onclick="quickRejectFromPreview()">✗ Reject</button>
+            <button class="btn btn-warning" onclick="quickMaybe()">⏸ Maybe</button>
+            <button class="btn btn-secondary" onclick="nextCandidate()">→ Next (N)</button>
+        </div>
+    </div>
+</div>
+
+<!-- Keyboard Shortcuts Help Modal -->
+<div id="shortcutsModal" class="modal" style="display:none;">
+    <div class="modal-content card" style="max-width: 500px; margin: 50px auto; padding: 20px;">
+        <h4>⌨️ Keyboard Shortcuts</h4>
+        <table class="table table-sm mt-3">
+            <tr><td><kbd>S</kbd></td><td>Shortlist current candidate</td></tr>
+            <tr><td><kbd>R</kbd></td><td>Reject current candidate</td></tr>
+            <tr><td><kbd>M</kbd></td><td>Mark as Maybe</td></tr>
+            <tr><td><kbd>N</kbd> or <kbd>→</kbd></td><td>Next candidate</td></tr>
+            <tr><td><kbd>P</kbd> or <kbd>←</kbd></td><td>Previous candidate</td></tr>
+            <tr><td><kbd>F</kbd></td><td>Toggle Focus Mode</td></tr>
+            <tr><td><kbd>Ctrl+K</kbd></td><td>Search</td></tr>
+            <tr><td><kbd>1-3</kbd></td><td>Switch between stages</td></tr>
+            <tr><td><kbd>?</kbd></td><td>Show this help</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Close modals</td></tr>
+        </table>
+        <button class="btn btn-primary" onclick="closeShortcuts()">Got it!</button>
+    </div>
+</div>
+
+<!-- Auto-Advance Toast Notification -->
+<div id="autoAdvanceToast" class="auto-advance-toast" style="display:none;">
+    <strong>✓ Action Complete!</strong>
+    <p class="mb-0">Moving to next candidate...</p>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ===== STATE MANAGEMENT =====
+let selectedCandidates = [];
+let currentCandidate = 1;
+let focusMode = false;
+let autoAdvanceEnabled = false;
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e) {
+    // Ignore if typing in input/textarea
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    switch(e.key.toLowerCase()) {
+        case 's': shortlistCurrent(); break;
+        case 'r': rejectCurrent(); break;
+        case 'm': maybeCurrent(); break;
+        case 'n':
+        case 'arrowright': nextCandidate(); break;
+        case 'p':
+        case 'arrowleft': previousCandidate(); break;
+        case 'f': toggleFocusMode(); break;
+        case '?': showShortcuts(); break;
+        case '1': showStage(1); break;
+        case '2': showStage(2); break;
+        case '3': showStage(3); break;
+        case 'escape': closeAllModals(); break;
+    }
+
+    // Ctrl+K for search
+    if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        document.querySelector('input[type="search"]').focus();
+    }
+});
+
+// ===== STAGE MANAGEMENT =====
+function showStage(stage) {
+    document.getElementById('stage1').style.display = stage === 1 ? 'block' : 'none';
+    document.getElementById('stage2').style.display = stage === 2 ? 'block' : 'none';
+    document.getElementById('stage3').style.display = stage === 3 ? 'block' : 'none';
+
+    // Update active stage indicator
+    document.querySelectorAll('.stage').forEach((el, i) => {
+        el.classList.toggle('active', i === stage - 1);
+    });
+}
+
+// ===== BULK SELECTION =====
+function toggleSelect(checkbox) {
+    const card = checkbox.closest('.candidate-card');
+    const candidateId = card.dataset.candidateId;
+
+    if (checkbox.checked) {
+        selectedCandidates.push(candidateId);
+        card.classList.add('selected');
+    } else {
+        selectedCandidates = selectedCandidates.filter(id => id !== candidateId);
+        card.classList.remove('selected');
+    }
+
+    document.getElementById('selectedCount').textContent = `${selectedCandidates.length} selected`;
+}
+
+function enableBulkMode() {
+    alert('Bulk mode enabled! Check candidates to process multiple at once.');
+}
+
+// ===== ONE-CLICK COMBO ACTIONS =====
+function shortlistAndNotify(candidateId) {
+    showToast('✓ Shortlisted + Screening package sent + 48h reminder set');
+    if (autoAdvanceEnabled) {
+        setTimeout(() => nextCandidate(), 1000);
+    }
+}
+
+function quickReject(candidateId) {
+    if (confirm('Reject this candidate? (Will send auto-rejection email)')) {
+        showToast('✗ Rejected + Auto-email sent');
+        if (autoAdvanceEnabled) {
+            setTimeout(() => nextCandidate(), 1000);
+        }
+    }
+}
+
+function markMaybe(candidateId) {
+    showToast('⏸ Marked as Maybe + 24h reminder set');
+    if (autoAdvanceEnabled) {
+        setTimeout(() => nextCandidate(), 1000);
+    }
+}
+
+function sendFullPackage(candidateId) {
+    showToast('📧 Full package sent + 48h auto-reminder scheduled');
+}
+
+function advanceToInterview(candidateId) {
+    showToast('✓ Moved to Interview Ready + Manager notified');
+    setTimeout(() => showStage(3), 1500);
+}
+
+function scheduleInterview(candidateId) {
+    showToast('📅 Interview link sent + Calendar invite created');
+}
+
+// ===== AUTO-ACTIONS =====
+function autoRemindManagers() {
+    showToast('📧 Reminder emails sent to 2 managers');
+}
+
+function sendAllPackages() {
+    if (confirm('Send screening packages to 3 candidates?')) {
+        showToast('📧 Packages sent to 3 candidates + Auto-reminders set for 48h');
+    }
+}
+
+function bulkShortlist() {
+    if (selectedCandidates.length === 0) {
+        alert('No candidates selected');
+        return;
+    }
+    showToast(`✓ ${selectedCandidates.length} candidates shortlisted + Packages sent`);
+    selectedCandidates = [];
+    document.getElementById('selectedCount').textContent = '0 selected';
+}
+
+function bulkProcessUrgent() {
+    if (confirm('Process all 5 urgent items? This will:\n- Send packages\n- Remind managers\n- Schedule ready candidates')) {
+        showToast('⚡ Processing 5 urgent items... (Est. 30 seconds)');
+        setTimeout(() => {
+            showToast('✓ All urgent items processed!');
+        }, 2000);
+    }
+}
+
+// ===== NAVIGATION =====
+function nextCandidate() {
+    currentCandidate++;
+    showToast(`→ Next candidate (#${currentCandidate})`);
+}
+
+function previousCandidate() {
+    currentCandidate--;
+    showToast(`← Previous candidate (#${currentCandidate})`);
+}
+
+function jumpToCandidate(id) {
+    currentCandidate = id;
+    showStage(1);
+    showToast(`Jumped to candidate #${id}`);
+}
+
+// ===== FOCUS MODE =====
+function toggleFocusMode() {
+    focusMode = !focusMode;
+    document.body.classList.toggle('focus-mode', focusMode);
+    showToast(focusMode ? '🎯 Focus Mode ON - Use arrow keys to navigate' : '🎯 Focus Mode OFF');
+}
+
+function toggleAutoAdvance() {
+    autoAdvanceEnabled = !autoAdvanceEnabled;
+    showToast(autoAdvanceEnabled ? '⚡ Auto-advance enabled' : '⚡ Auto-advance disabled');
+}
+
+// ===== MODALS =====
+function openDailyChecklist() {
+    document.getElementById('dailyChecklistModal').style.display = 'block';
+}
+
+function closeDailyChecklist() {
+    document.getElementById('dailyChecklistModal').style.display = 'none';
+}
+
+function autoCompleteChecklist() {
+    showToast('⚡ Auto-completing available tasks...');
+    setTimeout(() => {
+        showToast('✓ 3 tasks completed automatically!');
+        closeDailyChecklist();
+    }, 1500);
+}
+
+function quickPreview(candidateId) {
+    document.getElementById('previewCandidateId').textContent = candidateId;
+    document.getElementById('quickPreviewModal').style.display = 'block';
+}
+
+function closePreview() {
+    document.getElementById('quickPreviewModal').style.display = 'none';
+}
+
+function showShortcuts() {
+    document.getElementById('shortcutsModal').style.display = 'block';
+}
+
+function closeShortcuts() {
+    document.getElementById('shortcutsModal').style.display = 'none';
+}
+
+function closeAllModals() {
+    document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+}
+
+// ===== TEMPLATES =====
+function applyTemplate(templateType, candidateId) {
+    const templates = {
+        exp: 'Thank you for applying. Unfortunately, the position requires more experience...',
+        skill: 'We appreciate your interest. However, your skill set doesn\'t match...',
+        location: 'Thank you for your application. This role requires relocation...',
+        overqual: 'We\'re impressed by your qualifications, but this role may not...',
+        salary: 'Thank you for your interest. Unfortunately, salary expectations don\'t align...'
+    };
+
+    if (templates[templateType]) {
+        showToast('📝 Template applied - Review and send');
+    }
+}
+
+// ===== UTILITIES =====
+function showToast(message) {
+    const toast = document.getElementById('autoAdvanceToast');
+    toast.querySelector('p').textContent = message;
+    toast.style.display = 'block';
+
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function smartFilter(value) {
+    showToast(`🔥 Filtered to: ${value}`);
+}
+
+function exportCSV() {
+    showToast('📥 Exporting to CSV...');
+}
+
+// ===== KEYBOARD SHORTCUT ACTIONS =====
+function shortlistCurrent() {
+    shortlistAndNotify(currentCandidate);
+}
+
+function rejectCurrent() {
+    quickReject(currentCandidate);
+}
+
+function maybeCurrent() {
+    markMaybe(currentCandidate);
+}
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Show keyboard hints for 5 seconds
+    setTimeout(() => {
+        document.getElementById('keyboardHint').style.opacity = '0.5';
+    }, 5000);
+
+    // Focus on search when pressing /
+    document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            document.querySelector('input[type="search"]').focus();
+        }
+    });
+});
+
+// Toggle dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    showToast('🌙 Dark mode toggled');
+}
+</script>
 </body>
 </html>
