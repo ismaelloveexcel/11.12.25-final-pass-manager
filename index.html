@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screening Tab - Electronics Engineer (REQ-2025-EE-001)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #FFFFFF, #F8F8F8);
+            color: #000000;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .card, .modal-content, .header, .accordion-button {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .form-control, .btn {
+            border-radius: 10px;
+            border: 1px solid #E0E0E0;
+        }
+        .btn-primary { background: #E0E0E0; color: #000; border: none; }
+        .btn-success { background: #4CAF50; color: #FFF; }
+        .btn-danger { background: #F44336; color: #FFF; }
+        .btn-warning { background: #FFEB3B; color: #000; }
+        .btn-secondary { background: #E0E0E0; color: #000; }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .badge-pending { background: #FFEB3B; color: #000; }
+        .badge-approved { background: #4CAF50; color: #FFF; }
+        .badge-urgent { background: #F44336; color: #FFF; animation: pulse 2s infinite; }
+        .badge-warning { background: #FF9800; color: #FFF; }
+
+        /* SLA Indicators */
+        .sla-overdue { border-left: 4px solid #F44336; }
+        .sla-due-soon { border-left: 4px solid #FF9800; }
+        .sla-on-track { border-left: 4px solid #4CAF50; }
+
+        /* Priority Dashboard */
+        .priority-dashboard {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        .urgent-item {
+            background: #FFF3E0;
+            border-left: 3px solid #FF9800;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .urgent-item:hover { background: #FFE0B2; }
+
+        /* Keyboard shortcuts hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            z-index: 2000;
+        }
+
+        /* Quick action buttons - larger, more prominent */
+        .quick-actions {
+            position: sticky;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        /* Focus mode */
+        .focus-mode .candidate-card:not(.active-card) {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Time tracking badges */
+        .time-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+        }
+        .time-critical { background: #FFCDD2; color: #C62828; }
+        .time-warning { background: #FFF9C4; color: #F57F17; }
+        .time-ok { background: #C8E6C9; color: #2E7D32; }
+
+        /* Bulk selection */
+        .candidate-card.selected {
+            border: 2px solid #2196F3;
+            background: rgba(33, 150, 243, 0.05);
+        }
+
+        /* Auto-advance notification */
+        .auto-advance-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Template picker */
+        .template-picker {
+            background: #F5F5F5;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        /* One-click action combos */
+        .combo-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        /* AI Assistant Styles */
+        .ai-assistant-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            z-index: 5000;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: aiPulse 3s infinite;
+            transition: transform 0.3s ease;
+        }
+        .ai-assistant-btn:hover {
+            transform: scale(1.1);
+        }
+        .ai-assistant-btn .ai-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #F44336;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        @keyframes aiPulse {
+            0%, 100% { box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(102, 126, 234, 0.8); }
+        }
+
+        /* AI Chat Interface */
+        .ai-chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 6000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-chat-container {
+            width: 90%;
+            max-width: 900px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .ai-chat-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .ai-status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .ai-quick-actions {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: #F5F5F5;
+            border-bottom: 1px solid #E0E0E0;
+            overflow-x: auto;
+        }
+        .ai-quick-btn {
+            padding: 8px 15px;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .ai-quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .ai-chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .ai-message {
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+        }
+        .ai-message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .ai-message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .ai-message.assistant .ai-message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .ai-message.user .ai-message-avatar {
+            background: #E0E0E0;
+            color: #333;
+        }
+        .ai-message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .ai-message.user .ai-message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .ai-message-time {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 5px;
+        }
+        .ai-typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+        }
+        .ai-typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+        .ai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        .ai-chat-input-area {
+            padding: 15px;
+            border-top: 1px solid #E0E0E0;
+            background: white;
+            border-radius: 0 0 25px 25px;
+        }
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .ai-input-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+        .ai-input-container input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .ai-send-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* AI Suggestions Panel */
+        .ai-suggestions {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .ai-suggestion-item {
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .ai-suggestion-item:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* AI Processing Indicator */
+        .ai-processing {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 7000;
+            text-align: center;
+        }
+        .ai-processing-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #E0E0E0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* AI Badge on Cards */
+        .ai-scored {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        .ai-score-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* ===== PASS MANAGEMENT SYSTEM ===== */
+        /* Pass Generation Styles */
+        .pass-reference {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+            margin: 20px 0;
+        }
+        .pass-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .pass-pending { background: #FFF9C4; color: #F57F17; }
+        .pass-approved { background: #C8E6C9; color: #2E7D32; }
+        .pass-active { background: #B3E5FC; color: #01579B; }
+        .pass-expired { background: #FFCDD2; color: #C62828; }
+
+        /* Secret Admin Panel Styles */
+        .secret-admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 9999;
+            display: none;
+            overflow-y: auto;
+        }
+        .admin-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+        .admin-stat {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Template Builder Styles */
+        .template-builder {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        .component-palette {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .draggable-component {
+            background: #F5F5F5;
+            border: 2px dashed #E0E0E0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        .draggable-component:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .canvas-area {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 500px;
+            border: 2px solid #E0E0E0;
+            position: relative;
+        }
+        .canvas-area.dragover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+        .properties-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        /* Pass Card Preview Styles */
+        .pass-card-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .pass-card-preview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        .pass-qr {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        /* Pass Modal Styles */
+        .pass-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 8000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .pass-modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .stages { flex-direction: column; }
+            .keyboard-hint { display: none; }
+            .ai-assistant-btn { bottom: 70px; right: 20px; width: 60px; height: 60px; }
+            .ai-chat-container { width: 95%; height: 90vh; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- AI Assistant Floating Button -->
+<button class="ai-assistant-btn" onclick="openAIAssistant()" title="AI HR Assistant (Press A)">
+    🤖
+    <span class="ai-badge">3</span>
+</button>
+
+<!-- AI Chat Modal -->
+<div id="aiChatModal" class="ai-chat-modal" style="display:none;">
+    <div class="ai-chat-container">
+        <!-- Header -->
+        <div class="ai-chat-header">
+            <div>
+                <h3 style="margin: 0;">🤖 AI HR Assistant</h3>
+                <div class="ai-status">
+                    <div class="ai-status-dot"></div>
+                    <span>Online & Ready</span>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-light" onclick="closeAIAssistant()">✕ Close</button>
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="ai-quick-actions">
+            <button class="ai-quick-btn" onclick="aiQuickAction('source')">🔍 Source Profiles</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('score')">📊 Score All CVs</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('rank')">⭐ Rank Candidates</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('jd')">📝 Generate JD</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('emails')">✉️ Draft Emails</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('interview')">💬 Interview Questions</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('research')">🔬 Research Candidate</button>
+            <button class="ai-quick-btn" onclick="aiQuickAction('autopilot')">✈️ Enable Autopilot</button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <!-- Welcome Message -->
+            <div class="ai-message assistant">
+                <div class="ai-message-avatar">🤖</div>
+                <div>
+                    <div class="ai-message-content">
+                        <strong>Hey! I'm your AI HR Assistant 👋</strong>
+                        <p class="mb-2 mt-2">I can help you with:</p>
+                        <ul class="mb-0">
+                            <li><strong>Profile Sourcing:</strong> Search LinkedIn, Indeed, job boards automatically</li>
+                            <li><strong>CV Scoring:</strong> Analyze and score resumes instantly (94% accuracy)</li>
+                            <li><strong>Candidate Ranking:</strong> Rank all candidates by fit, experience, skills</li>
+                            <li><strong>JD Generation:</strong> Create professional job descriptions in seconds</li>
+                            <li><strong>Email Drafting:</strong> Write screening, rejection, interview emails</li>
+                            <li><strong>Background Research:</strong> Deep-dive into candidate backgrounds</li>
+                            <li><strong>Interview Prep:</strong> Generate tailored interview questions</li>
+                            <li><strong>Autopilot Mode:</strong> Let me handle routine tasks automatically</li>
+                        </ul>
+                        <p class="mt-2 mb-0"><em>What would you like me to do first?</em></p>
+                    </div>
+                    <div class="ai-message-time">Just now</div>
+                </div>
+            </div>
+
+            <!-- AI Suggestions -->
+            <div class="ai-suggestions">
+                <strong>💡 AI Suggestions Based on Your Current State:</strong>
+                <div class="ai-suggestion-item" onclick="aiSuggestion(1)">
+                    🚨 <strong>3 candidates are 72h+ overdue</strong> - Should I auto-send screening packages and set reminders?
+                </div>
+                <div class="ai-suggestion-item" onclick="aiSuggestion(2)">
+                    📊 <strong>Score all 23 new candidates</strong> - I can analyze and rank them by fit (Est. 2 mins)
+                </div>
+                <div class="ai-suggestion-item" onclick="aiSuggestion(3)">
+                    📝 <strong>2 JDs pending approval</strong> - I can review and auto-improve them for manager review
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (hidden by default) -->
+        <div id="aiTypingIndicator" class="ai-typing-indicator" style="display:none;">
+            <div class="ai-typing-dot"></div>
+            <div class="ai-typing-dot"></div>
+            <div class="ai-typing-dot"></div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="ai-chat-input-area">
+            <div class="ai-input-container">
+                <input type="text" id="aiChatInput" placeholder="Ask me anything... (e.g., 'Score all CVs', 'Generate a JD for Electronics Engineer')" onkeypress="handleAIChatEnter(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Processing Overlay -->
+<div id="aiProcessing" class="ai-processing" style="display:none;">
+    <div class="ai-processing-spinner"></div>
+    <h5 id="aiProcessingText">AI is processing...</h5>
+    <p id="aiProcessingSubtext" class="text-muted mb-0">This may take a few moments</p>
+</div>
+
+<!-- ===== PASS MANAGEMENT SYSTEM ===== -->
+
+<!-- Pass Generation Modal -->
+<div id="passGenerationModal" class="pass-modal">
+    <div class="pass-modal-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>🎫 Generate Candidate Pass</h3>
+            <button class="btn btn-sm btn-secondary" onclick="closePassModal()">✕</button>
+        </div>
+
+        <div id="passForm">
+            <div class="mb-3">
+                <label class="form-label"><strong>Pass Type:</strong></label>
+                <select class="form-select" id="passType">
+                    <option value="screening">Screening Pass</option>
+                    <option value="candidate">Candidate Pass</option>
+                    <option value="onboarding">Onboarding Pass</option>
+                    <option value="interview">Interview Pass</option>
+                    <option value="assessment">Assessment Pass</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Candidate:</strong></label>
+                <input type="text" class="form-control" id="passCandidate" placeholder="Enter candidate name" value="Nafees Ahamed K">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Position:</strong></label>
+                <input type="text" class="form-control" id="passPosition" value="Electronics Engineer (REQ-2025-EE-001)">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Valid Until:</strong></label>
+                <input type="date" class="form-control" id="passExpiry" value="2025-12-31">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Access Level:</strong></label>
+                <select class="form-select" id="passAccessLevel">
+                    <option value="basic">Basic (Forms Only)</option>
+                    <option value="standard">Standard (Forms + Assessments)</option>
+                    <option value="full">Full (All Resources)</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Auto-Actions:</strong></label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoEmail" checked>
+                    <label class="form-check-label" for="autoEmail">Send pass via email</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoNotify" checked>
+                    <label class="form-check-label" for="autoNotify">Notify candidate via SMS</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoTrack">
+                    <label class="form-check-label" for="autoTrack">Enable activity tracking</label>
+                </div>
+            </div>
+
+            <button class="btn btn-success w-100 py-3" onclick="generatePass()">
+                🎫 Generate Pass
+            </button>
+        </div>
+
+        <!-- Pass Generated Success View -->
+        <div id="passGenerated" style="display:none;">
+            <div class="text-center mb-4">
+                <h4>✅ Pass Generated Successfully!</h4>
+                <p class="text-muted">Pass has been created and sent to candidate</p>
+            </div>
+
+            <div class="pass-reference" id="generatedPassReference">
+                PASS-2025-SCR-001234
+            </div>
+
+            <div class="alert alert-info">
+                <strong>🔒 Security Notice:</strong> This is the ONLY reference you'll see. The actual pass URL is hidden for security. The candidate will receive their unique access link via email.
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-6">
+                    <strong>Status:</strong><br>
+                    <span class="pass-status pass-active" id="passStatusDisplay">ACTIVE</span>
+                </div>
+                <div class="col-6">
+                    <strong>Expires:</strong><br>
+                    <span id="passExpiryDisplay">Dec 31, 2025</span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <strong>Pass Includes:</strong>
+                <ul>
+                    <li>✓ Candidate Information Form</li>
+                    <li>✓ Soft Skills Assessment</li>
+                    <li>✓ Technical Assessment</li>
+                    <li>✓ Document Upload Portal</li>
+                    <li>✓ Progress Tracker</li>
+                </ul>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-primary flex-fill" onclick="viewPassDetails()">
+                    📊 View Details
+                </button>
+                <button class="btn btn-secondary flex-fill" onclick="copyPassReference()">
+                    📋 Copy Reference
+                </button>
+                <button class="btn btn-success flex-fill" onclick="closePassModal(); showToast('✓ Pass ready to use')">
+                    Done
+                </button>
+            </div>
+
+            <div class="mt-3">
+                <button class="btn btn-outline-primary w-100" onclick="resetPassForm()">
+                    ➕ Generate Another Pass
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secret Admin Control Panel (Hidden - Accessible via Ctrl+Shift+Alt+A) -->
+<div id="secretAdminPanel" class="secret-admin-panel">
+    <div class="admin-header">
+        <div>
+            <h2>🔐 ADMIN CONTROL CENTER</h2>
+            <p class="mb-0">Full system control and monitoring</p>
+        </div>
+        <button class="btn btn-danger" onclick="closeAdminPanel()">✕ Exit</button>
+    </div>
+
+    <div class="admin-dashboard">
+        <!-- System Stats -->
+        <div class="admin-card">
+            <h5>📊 System Statistics</h5>
+            <div class="admin-stat">1,247</div>
+            <p class="mb-0">Total Passes Generated</p>
+            <hr>
+            <div class="row mt-3">
+                <div class="col-6">
+                    <strong>Active:</strong> 342
+                </div>
+                <div class="col-6">
+                    <strong>Expired:</strong> 905
+                </div>
+            </div>
+        </div>
+
+        <!-- Pass Management -->
+        <div class="admin-card">
+            <h5>🎫 Pass Management</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" onclick="openTemplateBuilder()">
+                    🎨 Template Builder
+                </button>
+                <button class="btn btn-primary" onclick="viewAllPasses()">
+                    📋 View All Passes
+                </button>
+                <button class="btn btn-primary" onclick="viewPassAnalytics()">
+                    📈 Analytics Dashboard
+                </button>
+                <button class="btn btn-warning" onclick="bulkPassActions()">
+                    ⚡ Bulk Operations
+                </button>
+            </div>
+        </div>
+
+        <!-- Database Control -->
+        <div class="admin-card">
+            <h5>🗄️ Database Control</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-primary" onclick="viewCandidateDB()">
+                    View Candidate DB
+                </button>
+                <button class="btn btn-outline-primary" onclick="viewPassDB()">
+                    View Pass DB
+                </button>
+                <button class="btn btn-outline-primary" onclick="viewTemplateDB()">
+                    View Template DB
+                </button>
+                <button class="btn btn-outline-success" onclick="backupDatabase()">
+                    💾 Backup Database
+                </button>
+            </div>
+        </div>
+
+        <!-- Workflow Control -->
+        <div class="admin-card">
+            <h5>⚙️ Workflow Control</h5>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="autoApprove" checked>
+                <label class="form-check-label" for="autoApprove">Auto-Approve Passes</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="requireManagerApproval">
+                <label class="form-check-label" for="requireManagerApproval">Require Manager Approval</label>
+            </div>
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="autoExpire" checked>
+                <label class="form-check-label" for="autoExpire">Auto-Expire After Deadline</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="trackActivity" checked>
+                <label class="form-check-label" for="trackActivity">Track Pass Activity</label>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="admin-card">
+            <h5>🔔 Recent Activity</h5>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">2 minutes ago</small><br>
+                    <strong>Pass Generated:</strong> PASS-2025-SCR-001234<br>
+                    <span class="text-muted">Nafees Ahamed K</span>
+                </div>
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">15 minutes ago</small><br>
+                    <strong>Pass Accessed:</strong> PASS-2025-SCR-001230<br>
+                    <span class="text-muted">Sarah Johnson</span>
+                </div>
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">1 hour ago</small><br>
+                    <strong>Pass Completed:</strong> PASS-2025-SCR-001228<br>
+                    <span class="text-muted">Ahmed Al-Rashid</span>
+                </div>
+            </div>
+        </div>
+
+        /* Security & Access */
+        <div class="admin-card">
+            <h5>🔐 Security & Access</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-danger" onclick="revokePass()">
+                    🚫 Revoke Pass
+                </button>
+                <button class="btn btn-outline-danger" onclick="blockIP()">
+                    🔒 Block IP Address
+                </button>
+                <button class="btn btn-outline-warning" onclick="viewAccessLogs()">
+                    📜 View Access Logs
+                </button>
+                <button class="btn btn-outline-info" onclick="generateSecurityReport()">
+                    📊 Security Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template Builder Modal -->
+<div id="templateBuilderModal" class="pass-modal">
+    <div class="pass-modal-content" style="max-width: 95%; max-height: 95vh; overflow: hidden;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>🎨 Smart Template Builder</h3>
+            <button class="btn btn-sm btn-secondary" onclick="closeTemplateBuilder()">✕ Close</button>
+        </div>
+
+        <div class="template-builder">
+            <!-- Component Palette -->
+            <div class="component-palette">
+                <h6 class="mb-3">📦 Components</h6>
+                <div class="draggable-component" draggable="true" data-component="text">
+                    📝 Text Field
+                </div>
+                <div class="draggable-component" draggable="true" data-component="photo">
+                    📷 Photo
+                </div>
+                <div class="draggable-component" draggable="true" data-component="qr">
+                    📱 QR Code
+                </div>
+                <div class="draggable-component" draggable="true" data-component="barcode">
+                    🔖 Barcode
+                </div>
+                <div class="draggable-component" draggable="true" data-component="logo">
+                    🏢 Company Logo
+                </div>
+                <div class="draggable-component" draggable="true" data-component="signature">
+                    ✍️ Signature
+                </div>
+                <div class="draggable-component" draggable="true" data-component="expiry">
+                    ⏰ Expiry Date
+                </div>
+                <div class="draggable-component" draggable="true" data-component="status">
+                    🟢 Status Badge
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="canvas-area" id="templateCanvas" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h5 class="text-center text-muted">Drag components here to build your pass template</h5>
+                <div class="pass-card-preview mt-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h4>SCREENING PASS</h4>
+                            <p class="mb-0">Electronics Engineer</p>
+                        </div>
+                        <div class="pass-qr">
+                            <div style="width: 80px; height: 80px; background: #000;">QR</div>
+                        </div>
+                    </div>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-1"><small>Candidate Name:</small></p>
+                            <p class="mb-3"><strong>[AUTO-POPULATED]</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1"><small>Reference:</small></p>
+                            <p class="mb-3"><strong>[AUTO-GENERATED]</strong></p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="mb-1"><small>Valid Until:</small></p>
+                        <p><strong>[EXPIRY-DATE]</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Panel -->
+            <div class="properties-panel">
+                <h6 class="mb-3">⚙️ Properties</h6>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Template Name:</strong></label>
+                    <input type="text" class="form-control" value="Screening Pass - Default">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Pass Type:</strong></label>
+                    <select class="form-select">
+                        <option>Screening Pass</option>
+                        <option>Candidate Pass</option>
+                        <option>Onboarding Pass</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Color Scheme:</strong></label>
+                    <input type="color" class="form-control" value="#667eea">
+                </div>
+                <hr>
+                <h6 class="mb-3">📊 Smart Fields</h6>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Auto-populate from candidate DB</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Generate unique QR code</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Include expiry countdown</label>
+                </div>
+                <hr>
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-success">💾 Save Template</button>
+                    <button class="btn btn-primary">👁️ Preview</button>
+                    <button class="btn btn-secondary">📤 Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Keyboard Shortcuts Hint -->
+<div class="keyboard-hint" id="keyboardHint">
+    Press <kbd>?</kbd> for shortcuts | <kbd>A</kbd>=AI Assistant | <kbd>S</kbd>=Shortlist | <kbd>R</kbd>=Reject | <kbd>N</kbd>=Next | <kbd>F</kbd>=Focus Mode
+</div>
+
+<!-- Priority Dashboard (Sticky Top) -->
+<div class="priority-dashboard card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">🚨 TODAY'S URGENT ITEMS (5)</h5>
+        <div>
+            <button class="btn btn-sm btn-success" onclick="bulkProcessUrgent()">⚡ Process All Urgent</button>
+            <button class="btn btn-sm btn-secondary" onclick="toggleFocusMode()">🎯 Focus Mode</button>
+        </div>
+    </div>
+    <div class="urgent-list">
+        <div class="urgent-item" onclick="jumpToCandidate(1)">
+            <strong>3 Candidates</strong> - Waiting 72+ hours in HR Screening <span class="badge badge-urgent">CRITICAL</span>
+        </div>
+        <div class="urgent-item" onclick="jumpToCandidate(5)">
+            <strong>Manager Review</strong> - 2 JDs pending approval (48h overdue) <span class="badge badge-warning">URGENT</span>
+        </div>
+        <div class="urgent-item" onclick="jumpToCandidate(12)">
+            <strong>Follow-ups Due</strong> - 5 candidates need response by EOD <span class="badge badge-warning">URGENT</span>
+        </div>
+        <div class="urgent-item">
+            <strong>Interview Scheduling</strong> - 3 approved candidates ready to schedule <span class="badge badge-pending">ACTION NEEDED</span>
+        </div>
+        <div class="urgent-item">
+            <strong>Daily Goal</strong> - Process 8 more candidates to meet target (15/23 done) <span class="badge bg-info text-white">67%</span>
+        </div>
+    </div>
+</div>
+
+<!-- Header with Backend Access -->
+<div class="header card mb-4">
+    <div class="d-flex justify-content-between align-items-center p-3">
+        <div>
+            <h2>SCREENING – Electronics Engineer (REQ-2025-EE-001)</h2>
+            <small class="text-muted">Avg. Time per Stage: 2.3 days | Target: 1.5 days</small>
+        </div>
+        <div>
+            <button class="btn btn-warning me-2" onclick="openDailyChecklist()">✓ Daily Checklist (3/8)</button>
+            <button class="btn btn-primary" onclick="openBackendPanel()">HR Backend Panel</button>
+        </div>
+    </div>
+    <div class="stages d-flex flex-wrap gap-3 p-3">
+        <div class="stage active card p-2" onclick="showStage(1)" aria-label="Initial Review Stage">
+            ○ Initial Review (23)
+            <small class="d-block text-danger">5 overdue</small>
+        </div>
+        <div class="stage card p-2" onclick="showStage(2)" aria-label="HR Screening Stage">
+            ○ HR Screening (8)
+            <small class="d-block text-warning">3 critical</small>
+        </div>
+        <div class="stage card p-2" onclick="showStage(3)" aria-label="Interview Ready Stage">
+            ○ Interview Ready (3)
+            <small class="d-block text-success">All ready</small>
+        </div>
+    </div>
+</div>
+
+<!-- Stage 1: Initial Review -->
+<div id="stage1" class="container">
+    <!-- Smart Filters with Auto-sort -->
+    <div class="top-bar d-flex gap-3 mb-3">
+        <input type="search" class="form-control" placeholder="🔍 Search (Ctrl+K)..." aria-label="Search candidates">
+        <select class="form-select" onchange="smartFilter(this.value)">
+            <option value="urgent">🔥 Urgent First (Recommended)</option>
+            <option>Latest</option>
+            <option>Pending Manager</option>
+            <option>High Score First</option>
+            <option>All Sources</option>
+        </select>
+        <button class="btn btn-primary" onclick="enableBulkMode()">
+            ☑️ Bulk Select (0)
+        </button>
+    </div>
+
+    <!-- Alert with Auto-follow-up -->
+    <div class="alert alert-warning mb-3">
+        ⚠️ 2 Requisitions Pending – No JD/Approval Attached
+        <button class="btn btn-sm btn-warning ms-2" onclick="autoRemindManagers()">📧 Auto-Remind All Managers</button>
+        <button class="btn btn-sm btn-secondary" onclick="viewPending()">View Pending</button>
+    </div>
+
+    <!-- CANDIDATE CARD 1 - URGENT (72h+) WITH AI SCORING -->
+    <div class="candidate-card card mb-3 sla-overdue ai-scored" data-candidate-id="1">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
+                    <h5 class="d-inline">
+                        #1 ⭐ Nafees Ahamed K
+                        <span class="ai-score-badge">🤖 AI Scored: 94%</span>
+                        <span class="status-badge badge-urgent">OVERDUE 72h</span>
+                        <span class="time-badge time-critical">⏰ Applied 3 days ago</span>
+                    </h5>
+                    <p class="mb-1">Profile Match: 94% [LinkedIn] • Electronics Engineer • 3+ years • Bachelor's • Dubai</p>
+                    <p class="mb-2">
+                        <strong>AI Analysis:</strong> Strong PCB/embedded background; limited IoT exposure. Perfect educational fit.
+                        <strong>Risk:</strong> Salary expectations 15% above budget.
+                    </p>
+                    <!-- AI Breakdown -->
+                    <details class="mt-2">
+                        <summary class="text-muted" style="cursor: pointer;"><small>🤖 View AI Detailed Analysis</small></summary>
+                        <div class="mt-2 p-2 bg-light rounded">
+                            <strong>AI Scoring Breakdown:</strong>
+                            <ul class="mb-0 mt-2" style="font-size: 0.9rem;">
+                                <li><strong>Technical Skills Match: 96%</strong> - PCB Design (Expert), Embedded Systems (Advanced)</li>
+                                <li><strong>Experience Level: 92%</strong> - 3.5 years (ideal range: 3-5 years)</li>
+                                <li><strong>Education Fit: 100%</strong> - Bachelor's in Electronics Engineering</li>
+                                <li><strong>Location: 90%</strong> - Based in Dubai, willing to relocate</li>
+                                <li><strong>Salary Alignment: 85%</strong> - Expects AED 18k (budget: AED 15k)</li>
+                                <li><strong>Culture Fit: 94%</strong> - Team player, innovative mindset</li>
+                            </ul>
+                            <p class="mt-2 mb-0"><strong>AI Recommendation:</strong> <span class="badge bg-success">Strong Shortlist</span> - Top 5% candidate. Suggest negotiating salary during interview.</p>
+                        </div>
+                    </details>
+                </div>
+                <div class="text-end">
+                    <small class="d-block text-muted">Last Action: 72h ago</small>
+                    <small class="d-block text-danger">⚠️ SLA breach</small>
+                    <button class="btn btn-sm btn-outline-secondary mt-2" onclick="aiResearchCandidate(1)">🤖 AI Research</button>
+                </div>
+            </div>
+
+            <!-- JD Workflow - Collapsed by default for speed -->
+            <details class="mt-2">
+                <summary><strong>JD Workflow</strong> <span class="badge badge-pending">Pending Manager (48h)</span></summary>
+                <div class="mt-2 p-2 bg-light rounded">
+                    <p class="mb-2">HR Draft: <a href="#">View Draft JD</a></p>
+                    <button class="btn btn-sm btn-warning" onclick="autoRemindManager(1)">📧 Auto-Remind Manager</button>
+                    <button class="btn btn-sm btn-success">✓ Approve JD</button>
+                    <button class="btn btn-sm btn-danger">✗ Reject/Revise</button>
+                    <textarea class="form-control mt-2" placeholder="Quick note..."></textarea>
+                </div>
+            </details>
+
+            <!-- QUICK DECISION BUTTONS (Prominent) -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="shortlistAndNotify(1)">
+                    ✓ Shortlist + Send Package (S)
+                </button>
+                <button class="btn btn-danger" onclick="quickReject(1)">
+                    ✗ Reject (R)
+                </button>
+                <button class="btn btn-warning" onclick="markMaybe(1)">
+                    ⏸ Maybe (M)
+                </button>
+                <button class="btn btn-secondary" onclick="quickPreview(1)">
+                    👁️ Preview
+                </button>
+            </div>
+
+            <!-- PASS GENERATION BUTTON -->
+            <div class="mt-3">
+                <button class="btn btn-primary w-100" onclick="openPassModal(1)" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
+                    🎫 Generate Screening Pass
+                </button>
+            </div>
+
+            <!-- Templates for quick actions -->
+            <details class="mt-2">
+                <summary>Use Template</summary>
+                <div class="template-picker">
+                    <select class="form-select form-select-sm" onchange="applyTemplate(this.value, 1)">
+                        <option>Select rejection template...</option>
+                        <option value="exp">Insufficient experience</option>
+                        <option value="skill">Skill mismatch</option>
+                        <option value="location">Location constraint</option>
+                        <option value="overqual">Overqualified</option>
+                        <option value="salary">Salary expectations</option>
+                    </select>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- CANDIDATE CARD 2 - HIGH PRIORITY -->
+    <div class="candidate-card card mb-3 sla-due-soon" data-candidate-id="2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
+                    <h5 class="d-inline">
+                        #2 Sarah Johnson
+                        <span class="status-badge badge-warning">DUE 24h</span>
+                        <span class="time-badge time-warning">⏰ Applied 1 day ago</span>
+                    </h5>
+                    <p class="mb-1">Profile Match: 88% [Indeed] • Electronics Engineer • 5+ years • Master's • Abu Dhabi</p>
+                    <p class="mb-2"><strong>Key:</strong> Strong IoT & PCB. Leadership experience. <strong>Risk:</strong> Notice period 3mo.</p>
+                </div>
+                <div class="text-end">
+                    <small class="d-block text-muted">Last Action: 24h ago</small>
+                    <small class="d-block text-warning">⚠️ Due soon</small>
+                </div>
+            </div>
+
+            <!-- Quick decision buttons -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="shortlistAndNotify(2)">
+                    ✓ Shortlist + Send Package (S)
+                </button>
+                <button class="btn btn-danger" onclick="quickReject(2)">✗ Reject (R)</button>
+                <button class="btn btn-warning" onclick="markMaybe(2)">⏸ Maybe (M)</button>
+                <button class="btn btn-secondary" onclick="quickPreview(2)">👁️ Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CANDIDATE CARD 3 - ON TRACK -->
+    <div class="candidate-card card mb-3 sla-on-track" data-candidate-id="3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <input type="checkbox" class="form-check-input me-2" onclick="toggleSelect(this)">
+                    <h5 class="d-inline">
+                        #3 Ahmed Al-Rashid
+                        <span class="status-badge badge-pending">NEW</span>
+                        <span class="time-badge time-ok">⏰ Applied 4 hours ago</span>
+                    </h5>
+                    <p class="mb-1">Profile Match: 91% [LinkedIn] • Electronics Engineer • 4 years • Bachelor's • Sharjah</p>
+                    <p class="mb-2"><strong>Key:</strong> Perfect tech match. Local. <strong>Risk:</strong> None identified.</p>
+                </div>
+                <div class="text-end">
+                    <small class="d-block text-success">✓ On track</small>
+                </div>
+            </div>
+
+            <!-- Quick decision buttons -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="shortlistAndNotify(3)">
+                    ✓ Shortlist + Send Package (S)
+                </button>
+                <button class="btn btn-danger" onclick="quickReject(3)">✗ Reject (R)</button>
+                <button class="btn btn-warning" onclick="markMaybe(3)">⏸ Maybe (M)</button>
+                <button class="btn btn-secondary" onclick="quickPreview(3)">👁️ Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="quick-actions card">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong>Bulk Actions:</strong> <span id="selectedCount">0 selected</span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success" onclick="bulkShortlist()">✓ Shortlist All + Send Packages</button>
+                <button class="btn btn-danger" onclick="bulkReject()">✗ Reject All</button>
+                <button class="btn btn-secondary" onclick="exportCSV()">📥 Export CSV</button>
+            </div>
+            <div>
+                Showing 23 candidates • <strong>5 need urgent action</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stage 2: HR Screening -->
+<div id="stage2" style="display:none;">
+    <div class="alert alert-danger mb-3">
+        🚨 <strong>3 CRITICAL:</strong> Candidates waiting 72+ hours for screening package
+        <button class="btn btn-sm btn-danger ms-2" onclick="sendAllPackages()">⚡ Send All Packages Now</button>
+    </div>
+
+    <div class="card mb-3 sla-overdue">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>Candidate: Nafees Ahamed K
+                        <span class="status-badge badge-urgent">CRITICAL - 72h</span>
+                        <span class="time-badge time-critical">⏰ Shortlisted 3 days ago</span>
+                    </h5>
+                    <p class="mb-2">Status: Package not sent yet</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-danger">Auto-reminder sent: 24h ago</small>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">☐ Candidate Information Form – Not sent</li>
+                <li class="list-group-item">☐ Soft Skills Assessment – Not sent</li>
+                <li class="list-group-item">☐ Technical Assessment – Required</li>
+            </ul>
+
+            <div class="progress mb-3" style="height: 15px;">
+                <div class="progress-bar bg-danger" style="width: 0%">0% Complete</div>
+            </div>
+
+            <!-- ONE-CLICK COMBO ACTIONS -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-success combo-btn" onclick="sendFullPackage(1)">
+                    ⚡ Send Full Package + Set 48h Reminder
+                </button>
+                <button class="btn btn-warning" onclick="callCandidate(1)">📞 Quick Call</button>
+                <button class="btn btn-secondary" onclick="requestDocs(1)">📎 Request Docs</button>
+            </div>
+
+            <!-- Template email preview -->
+            <details class="mt-2">
+                <summary>Preview Email</summary>
+                <div class="p-2 bg-light rounded">
+                    <small>Subject: Next Steps - Electronics Engineer Position</small>
+                    <p class="mb-0"><small>Dear Nafees,<br>Thank you for your interest. Please complete the attached forms by [DATE]...</small></p>
+                    <button class="btn btn-sm btn-primary mt-2">Edit Template</button>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- Candidate IN PROGRESS -->
+    <div class="card mb-3 sla-due-soon">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>Candidate: Sarah Johnson
+                        <span class="status-badge badge-pending">IN PROGRESS</span>
+                        <span class="time-badge time-ok">⏰ Package sent 8h ago</span>
+                    </h5>
+                </div>
+                <div class="text-end">
+                    <small class="text-success">✓ Responding actively</small>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">✓ Candidate Information Form – Completed (2h ago)</li>
+                <li class="list-group-item">🔄 Soft Skills Assessment – In progress (40% done)</li>
+                <li class="list-group-item">☐ Technical Assessment – Not started</li>
+            </ul>
+
+            <div class="progress mb-3" style="height: 15px;">
+                <div class="progress-bar bg-warning" style="width: 47%">47% Complete</div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-success" onclick="clearForInterview(2)" disabled>✓ Clear for Interview (Not Ready)</button>
+                <button class="btn btn-warning" onclick="sendReminder(2)">📧 Send Gentle Reminder</button>
+                <button class="btn btn-secondary" onclick="viewProfile(2)">📊 View Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- READY TO CLEAR -->
+    <div class="card mb-3 sla-on-track" style="border: 2px solid #4CAF50;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>Candidate: Ahmed Al-Rashid
+                        <span class="status-badge badge-approved">COMPLETE ✓</span>
+                        <span class="time-badge time-ok">⏰ Completed 1h ago</span>
+                    </h5>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">✓ Candidate Information Form – Completed</li>
+                <li class="list-group-item">✓ Soft Skills Assessment – 85/100</li>
+                <li class="list-group-item">✓ Technical Assessment – 92/100</li>
+            </ul>
+
+            <div class="progress mb-3" style="height: 15px;">
+                <div class="progress-bar bg-success" style="width: 100%">100% Complete</div>
+            </div>
+
+            <!-- ONE-CLICK ADVANCE -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-success combo-btn" onclick="advanceToInterview(3)">
+                    ⚡ Clear for Interview + Notify Manager
+                </button>
+                <button class="btn btn-secondary" onclick="viewFullProfile(3)">📊 Full Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-advance notification -->
+    <div class="alert alert-info">
+        💡 <strong>Tip:</strong> Enable auto-advance to automatically move completed candidates to Interview Ready stage.
+        <button class="btn btn-sm btn-primary ms-2" onclick="toggleAutoAdvance()">Enable Auto-Advance</button>
+    </div>
+</div>
+
+<!-- Stage 3: Interview Ready -->
+<div id="stage3" style="display:none;">
+    <div class="alert alert-success mb-3">
+        ✓ <strong>3 candidates ready for interviews</strong> - All cleared and available
+        <button class="btn btn-sm btn-success ms-2" onclick="bulkSchedule()">📅 Batch Schedule All (Calendly)</button>
+    </div>
+
+    <div class="d-flex gap-3 mb-3">
+        <button class="btn btn-primary" onclick="compareAll()">⚖️ Compare All 3</button>
+        <button class="btn btn-success" onclick="scheduleInterviews()">📅 Schedule Interviews</button>
+        <button class="btn btn-secondary" onclick="exportReport()">📊 Export Report</button>
+        <button class="btn btn-warning" onclick="sendToManager()">📧 Send Bundle to Manager</button>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5>Ahmed Al-Rashid
+                        <span class="status-badge badge-approved">READY</span>
+                        <span class="time-badge time-ok">Cleared 1h ago</span>
+                    </h5>
+                    <p><strong>Overall Score: 90%</strong> (Soft Skills: 85 | Technical: 92)</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-success">Top Candidate</span>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>Personal:</strong> ahmed@email.com | +971-XXX | Sharjah | UAE National</p>
+                    <p><strong>Employment:</strong> Current: AED 12k | Expected: AED 15k | Notice: 1 month</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="risk-indicator risk-medium">
+                        <strong>Risk Level: Low (25%)</strong>
+                        <small class="d-block">Salary fit: 5% | Notice: 10% | Location: 0% | Skills: 10%</small>
+                    </div>
+                </div>
+            </div>
+
+            <details class="mt-3">
+                <summary><strong>Compensation History</strong></summary>
+                <div class="accordion-body mt-2 p-2 bg-light rounded">
+                    <ul class="mb-0">
+                        <li>Initial: AED 15k + Benefits (Approved by HR)</li>
+                        <li>Note: Within budget, competitive for market</li>
+                    </ul>
+                </div>
+            </details>
+
+            <!-- ONE-CLICK SCHEDULING -->
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success combo-btn" onclick="scheduleInterview(3)">
+                    ⚡ Schedule Interview + Send Invite
+                </button>
+                <button class="btn btn-secondary" onclick="viewFullProfile(3)">📄 Full Profile</button>
+                <button class="btn btn-warning" onclick="hold(3)">⏸ Hold</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Daily Checklist Modal -->
+<div id="dailyChecklistModal" class="modal" style="display:none;">
+    <div class="modal-content card" style="max-width: 600px; margin: 50px auto; padding: 30px;">
+        <h3>✓ Daily Checklist</h3>
+        <p class="text-muted">Complete these to stay on track</p>
+
+        <div class="list-group">
+            <label class="list-group-item">
+                <input type="checkbox" checked> Process all candidates waiting 48+ hours (5 remaining)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox" checked> Send screening packages to shortlisted candidates (3 sent)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox" checked> Follow up on pending assessments (2 reminded)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Schedule interviews for ready candidates (3 pending)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Send manager reports for pending approvals (2 pending)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Review and respond to candidate queries (0 pending)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Update job board postings (1 needs refresh)
+            </label>
+            <label class="list-group-item">
+                <input type="checkbox"> Clear completed candidates to next stage (1 ready)
+            </label>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between">
+            <button class="btn btn-secondary" onclick="closeDailyChecklist()">Close</button>
+            <button class="btn btn-success" onclick="autoCompleteChecklist()">⚡ Auto-Complete Available Tasks</button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Preview Modal -->
+<div id="quickPreviewModal" class="modal" style="display:none;">
+    <div class="modal-content card" style="max-width: 800px; margin: 20px auto; padding: 20px;">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>Quick Preview - Candidate #<span id="previewCandidateId"></span></h4>
+            <button class="btn btn-sm btn-secondary" onclick="closePreview()">✕ Close</button>
+        </div>
+
+        <div id="previewContent">
+            <!-- Resume preview, highlights, quick decision buttons -->
+            <p><strong>Resume Summary:</strong> 3+ years in electronics engineering...</p>
+            <p><strong>Key Skills:</strong> PCB Design, Embedded Systems, Circuit Analysis</p>
+            <p><strong>Education:</strong> B.Eng Electronics, 2019</p>
+            <p><strong>Current Role:</strong> Electronics Engineer at Tech Corp</p>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-success" onclick="quickShortlist()">✓ Shortlist</button>
+            <button class="btn btn-danger" onclick="quickRejectFromPreview()">✗ Reject</button>
+            <button class="btn btn-warning" onclick="quickMaybe()">⏸ Maybe</button>
+            <button class="btn btn-secondary" onclick="nextCandidate()">→ Next (N)</button>
+        </div>
+    </div>
+</div>
+
+<!-- Keyboard Shortcuts Help Modal -->
+<div id="shortcutsModal" class="modal" style="display:none;">
+    <div class="modal-content card" style="max-width: 500px; margin: 50px auto; padding: 20px;">
+        <h4>⌨️ Keyboard Shortcuts</h4>
+        <table class="table table-sm mt-3">
+            <tr><td><kbd>S</kbd></td><td>Shortlist current candidate</td></tr>
+            <tr><td><kbd>R</kbd></td><td>Reject current candidate</td></tr>
+            <tr><td><kbd>M</kbd></td><td>Mark as Maybe</td></tr>
+            <tr><td><kbd>N</kbd> or <kbd>→</kbd></td><td>Next candidate</td></tr>
+            <tr><td><kbd>P</kbd> or <kbd>←</kbd></td><td>Previous candidate</td></tr>
+            <tr><td><kbd>F</kbd></td><td>Toggle Focus Mode</td></tr>
+            <tr><td><kbd>Ctrl+K</kbd></td><td>Search</td></tr>
+            <tr><td><kbd>1-3</kbd></td><td>Switch between stages</td></tr>
+            <tr><td><kbd>?</kbd></td><td>Show this help</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Close modals</td></tr>
+        </table>
+        <button class="btn btn-primary" onclick="closeShortcuts()">Got it!</button>
+    </div>
+</div>
+
+<!-- Auto-Advance Toast Notification -->
+<div id="autoAdvanceToast" class="auto-advance-toast" style="display:none;">
+    <strong>✓ Action Complete!</strong>
+    <p class="mb-0">Moving to next candidate...</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ===== STATE MANAGEMENT =====
+let selectedCandidates = [];
+let currentCandidate = 1;
+let focusMode = false;
+let autoAdvanceEnabled = false;
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e) {
+    // Ignore if typing in input/textarea
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    switch(e.key.toLowerCase()) {
+        case 's': shortlistCurrent(); break;
+        case 'r': rejectCurrent(); break;
+        case 'm': maybeCurrent(); break;
+        case 'n':
+        case 'arrowright': nextCandidate(); break;
+        case 'p':
+        case 'arrowleft': previousCandidate(); break;
+        case 'f': toggleFocusMode(); break;
+        case '?': showShortcuts(); break;
+        case '1': showStage(1); break;
+        case '2': showStage(2); break;
+        case '3': showStage(3); break;
+        case 'escape': closeAllModals(); break;
+    }
+
+    // Ctrl+K for search
+    if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        document.querySelector('input[type="search"]').focus();
+    }
+});
+
+// ===== STAGE MANAGEMENT =====
+function showStage(stage) {
+    document.getElementById('stage1').style.display = stage === 1 ? 'block' : 'none';
+    document.getElementById('stage2').style.display = stage === 2 ? 'block' : 'none';
+    document.getElementById('stage3').style.display = stage === 3 ? 'block' : 'none';
+
+    // Update active stage indicator
+    document.querySelectorAll('.stage').forEach((el, i) => {
+        el.classList.toggle('active', i === stage - 1);
+    });
+}
+
+// ===== BULK SELECTION =====
+function toggleSelect(checkbox) {
+    const card = checkbox.closest('.candidate-card');
+    const candidateId = card.dataset.candidateId;
+
+    if (checkbox.checked) {
+        selectedCandidates.push(candidateId);
+        card.classList.add('selected');
+    } else {
+        selectedCandidates = selectedCandidates.filter(id => id !== candidateId);
+        card.classList.remove('selected');
+    }
+
+    document.getElementById('selectedCount').textContent = `${selectedCandidates.length} selected`;
+}
+
+function enableBulkMode() {
+    alert('Bulk mode enabled! Check candidates to process multiple at once.');
+}
+
+// ===== ONE-CLICK COMBO ACTIONS =====
+function shortlistAndNotify(candidateId) {
+    showToast('✓ Shortlisted + Screening package sent + 48h reminder set');
+    if (autoAdvanceEnabled) {
+        setTimeout(() => nextCandidate(), 1000);
+    }
+}
+
+function quickReject(candidateId) {
+    if (confirm('Reject this candidate? (Will send auto-rejection email)')) {
+        showToast('✗ Rejected + Auto-email sent');
+        if (autoAdvanceEnabled) {
+            setTimeout(() => nextCandidate(), 1000);
+        }
+    }
+}
+
+function markMaybe(candidateId) {
+    showToast('⏸ Marked as Maybe + 24h reminder set');
+    if (autoAdvanceEnabled) {
+        setTimeout(() => nextCandidate(), 1000);
+    }
+}
+
+function sendFullPackage(candidateId) {
+    showToast('📧 Full package sent + 48h auto-reminder scheduled');
+}
+
+function advanceToInterview(candidateId) {
+    showToast('✓ Moved to Interview Ready + Manager notified');
+    setTimeout(() => showStage(3), 1500);
+}
+
+function scheduleInterview(candidateId) {
+    showToast('📅 Interview link sent + Calendar invite created');
+}
+
+// ===== AUTO-ACTIONS =====
+function autoRemindManagers() {
+    showToast('📧 Reminder emails sent to 2 managers');
+}
+
+function sendAllPackages() {
+    if (confirm('Send screening packages to 3 candidates?')) {
+        showToast('📧 Packages sent to 3 candidates + Auto-reminders set for 48h');
+    }
+}
+
+function bulkShortlist() {
+    if (selectedCandidates.length === 0) {
+        alert('No candidates selected');
+        return;
+    }
+    showToast(`✓ ${selectedCandidates.length} candidates shortlisted + Packages sent`);
+    selectedCandidates = [];
+    document.getElementById('selectedCount').textContent = '0 selected';
+}
+
+function bulkProcessUrgent() {
+    if (confirm('Process all 5 urgent items? This will:\n- Send packages\n- Remind managers\n- Schedule ready candidates')) {
+        showToast('⚡ Processing 5 urgent items... (Est. 30 seconds)');
+        setTimeout(() => {
+            showToast('✓ All urgent items processed!');
+        }, 2000);
+    }
+}
+
+// ===== NAVIGATION =====
+function nextCandidate() {
+    currentCandidate++;
+    showToast(`→ Next candidate (#${currentCandidate})`);
+}
+
+function previousCandidate() {
+    currentCandidate--;
+    showToast(`← Previous candidate (#${currentCandidate})`);
+}
+
+function jumpToCandidate(id) {
+    currentCandidate = id;
+    showStage(1);
+    showToast(`Jumped to candidate #${id}`);
+}
+
+// ===== FOCUS MODE =====
+function toggleFocusMode() {
+    focusMode = !focusMode;
+    document.body.classList.toggle('focus-mode', focusMode);
+    showToast(focusMode ? '🎯 Focus Mode ON - Use arrow keys to navigate' : '🎯 Focus Mode OFF');
+}
+
+function toggleAutoAdvance() {
+    autoAdvanceEnabled = !autoAdvanceEnabled;
+    showToast(autoAdvanceEnabled ? '⚡ Auto-advance enabled' : '⚡ Auto-advance disabled');
+}
+
+// ===== MODALS =====
+function openDailyChecklist() {
+    document.getElementById('dailyChecklistModal').style.display = 'block';
+}
+
+function closeDailyChecklist() {
+    document.getElementById('dailyChecklistModal').style.display = 'none';
+}
+
+function autoCompleteChecklist() {
+    showToast('⚡ Auto-completing available tasks...');
+    setTimeout(() => {
+        showToast('✓ 3 tasks completed automatically!');
+        closeDailyChecklist();
+    }, 1500);
+}
+
+function quickPreview(candidateId) {
+    document.getElementById('previewCandidateId').textContent = candidateId;
+    document.getElementById('quickPreviewModal').style.display = 'block';
+}
+
+function closePreview() {
+    document.getElementById('quickPreviewModal').style.display = 'none';
+}
+
+function showShortcuts() {
+    document.getElementById('shortcutsModal').style.display = 'block';
+}
+
+function closeShortcuts() {
+    document.getElementById('shortcutsModal').style.display = 'none';
+}
+
+function closeAllModals() {
+    document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+}
+
+// ===== TEMPLATES =====
+function applyTemplate(templateType, candidateId) {
+    const templates = {
+        exp: 'Thank you for applying. Unfortunately, the position requires more experience...',
+        skill: 'We appreciate your interest. However, your skill set doesn\'t match...',
+        location: 'Thank you for your application. This role requires relocation...',
+        overqual: 'We\'re impressed by your qualifications, but this role may not...',
+        salary: 'Thank you for your interest. Unfortunately, salary expectations don\'t align...'
+    };
+
+    if (templates[templateType]) {
+        showToast('📝 Template applied - Review and send');
+    }
+}
+
+// ===== UTILITIES =====
+function showToast(message) {
+    const toast = document.getElementById('autoAdvanceToast');
+    toast.querySelector('p').textContent = message;
+    toast.style.display = 'block';
+
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function smartFilter(value) {
+    showToast(`🔥 Filtered to: ${value}`);
+}
+
+function exportCSV() {
+    showToast('📥 Exporting to CSV...');
+}
+
+// ===== KEYBOARD SHORTCUT ACTIONS =====
+function shortlistCurrent() {
+    shortlistAndNotify(currentCandidate);
+}
+
+function rejectCurrent() {
+    quickReject(currentCandidate);
+}
+
+function maybeCurrent() {
+    markMaybe(currentCandidate);
+}
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Show keyboard hints for 5 seconds
+    setTimeout(() => {
+        document.getElementById('keyboardHint').style.opacity = '0.5';
+    }, 5000);
+
+    // Focus on search when pressing /
+    document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            document.querySelector('input[type="search"]').focus();
+        }
+    });
+});
+
+// ===== AI ASSISTANT FUNCTIONS =====
+let aiChatHistory = [];
+
+// Open AI Assistant
+function openAIAssistant() {
+    document.getElementById('aiChatModal').style.display = 'flex';
+    document.getElementById('aiChatInput').focus();
+}
+
+// Close AI Assistant
+function closeAIAssistant() {
+    document.getElementById('aiChatModal').style.display = 'none';
+}
+
+// Handle Enter key in chat
+function handleAIChatEnter(event) {
+    if (event.key === 'Enter') {
+        sendAIMessage();
+    }
+}
+
+// Send AI Message
+function sendAIMessage() {
+    const input = document.getElementById('aiChatInput');
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    // Add user message to chat
+    addAIMessage('user', message);
+    input.value = '';
+
+    // Show typing indicator
+    document.getElementById('aiTypingIndicator').style.display = 'flex';
+
+    // Simulate AI response (replace with actual AI API call)
+    setTimeout(() => {
+        document.getElementById('aiTypingIndicator').style.display = 'none';
+        processAIRequest(message);
+    }, 1500);
+}
+
+// Process AI Request
+function processAIRequest(message) {
+    const lowerMessage = message.toLowerCase();
+
+    // Smart responses based on keywords
+    if (lowerMessage.includes('score') || lowerMessage.includes('cv')) {
+        aiScoreAllCandidates();
+    } else if (lowerMessage.includes('rank')) {
+        aiRankCandidates();
+    } else if (lowerMessage.includes('jd') || lowerMessage.includes('job description')) {
+        aiGenerateJD();
+    } else if (lowerMessage.includes('source') || lowerMessage.includes('find')) {
+        aiSourceProfiles(message);
+    } else if (lowerMessage.includes('email') || lowerMessage.includes('draft')) {
+        aiDraftEmails(message);
+    } else if (lowerMessage.includes('interview')) {
+        aiGenerateInterviewQuestions();
+    } else if (lowerMessage.includes('research')) {
+        aiResearchCandidate();
+    } else if (lowerMessage.includes('autopilot') || lowerMessage.includes('auto')) {
+        aiEnableAutopilot();
+    } else {
+        // General response
+        addAIMessage('assistant', `I understand you want help with: "${message}". Let me break this down:\n\n1. I can analyze what you need\n2. Execute the task automatically\n3. Provide results and recommendations\n\nWould you like me to proceed with this task?`);
+    }
+}
+
+// Add AI Message to Chat
+function addAIMessage(sender, content) {
+    const messagesContainer = document.getElementById('aiChatMessages');
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const messageHTML = `
+        <div class="ai-message ${sender}">
+            <div class="ai-message-avatar">${sender === 'user' ? '👤' : '🤖'}</div>
+            <div>
+                <div class="ai-message-content">${content}</div>
+                <div class="ai-message-time">${time}</div>
+            </div>
+        </div>
+    `;
+
+    messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// AI Quick Actions
+function aiQuickAction(action) {
+    document.getElementById('aiTypingIndicator').style.display = 'flex';
+
+    setTimeout(() => {
+        document.getElementById('aiTypingIndicator').style.display = 'none';
+
+        switch(action) {
+            case 'source':
+                aiSourceProfiles();
+                break;
+            case 'score':
+                aiScoreAllCandidates();
+                break;
+            case 'rank':
+                aiRankCandidates();
+                break;
+            case 'jd':
+                aiGenerateJD();
+                break;
+            case 'emails':
+                aiDraftEmails();
+                break;
+            case 'interview':
+                aiGenerateInterviewQuestions();
+                break;
+            case 'research':
+                aiResearchCandidate();
+                break;
+            case 'autopilot':
+                aiEnableAutopilot();
+                break;
+        }
+    }, 1000);
+}
+
+// AI Source Profiles
+function aiSourceProfiles(query = '') {
+    showAIProcessing('Sourcing profiles from LinkedIn, Indeed, and job boards...', 'Analyzing 150+ profiles');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>🔍 Profile Sourcing Complete!</strong>
+            <p class="mt-2 mb-2">I've searched LinkedIn, Indeed, Glassdoor, and Naukri for Electronics Engineers.</p>
+            <ul>
+                <li><strong>Total Profiles Found: 127</strong></li>
+                <li>High Match (85%+): 23 candidates</li>
+                <li>Medium Match (70-84%): 45 candidates</li>
+                <li>Low Match (<70%): 59 candidates</li>
+            </ul>
+            <p class="mb-0"><strong>Top 3 New Discoveries:</strong></p>
+            <ol class="mb-0">
+                <li><strong>Priya Sharma</strong> - 5 years, PCB+IoT expert, Abu Dhabi (96% match)</li>
+                <li><strong>Mohammed Ali</strong> - 4 years, Embedded systems, Dubai (94% match)</li>
+                <li><strong>Lisa Chen</strong> - 6 years, Leadership experience, Sharjah (92% match)</li>
+            </ol>
+            <p class="mt-2 mb-0"><em>Should I add these to your candidate pool?</em></p>
+        `);
+    }, 3000);
+}
+
+// AI Score All Candidates
+function aiScoreAllCandidates() {
+    showAIProcessing('Analyzing 23 CVs with AI...', 'Scoring technical skills, experience, education, and fit');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>📊 CV Scoring Complete!</strong>
+            <p class="mt-2 mb-2">I've analyzed all 23 candidates using advanced AI algorithms.</p>
+            <p><strong>Results:</strong></p>
+            <ul>
+                <li>🟢 <strong>Top Tier (90%+):</strong> 5 candidates - <em>Strong recommend shortlist</em></li>
+                <li>🟡 <strong>Good Fit (80-89%):</strong> 8 candidates - <em>Recommend interview</em></li>
+                <li>🟠 <strong>Moderate (70-79%):</strong> 6 candidates - <em>Maybe pile</em></li>
+                <li>🔴 <strong>Low Fit (<70%):</strong> 4 candidates - <em>Recommend rejection</em></li>
+            </ul>
+            <p class="mb-1"><strong>AI has updated all candidate cards with detailed scoring.</strong></p>
+            <p class="mb-0"><em>Want me to auto-shortlist the top 5 and send screening packages?</em></p>
+        `);
+        showToast('✓ All 23 candidates scored by AI');
+    }, 3500);
+}
+
+// AI Rank Candidates
+function aiRankCandidates() {
+    showAIProcessing('Ranking candidates by fit, experience, and potential...', 'Using machine learning algorithms');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>⭐ Candidate Ranking Complete!</strong>
+            <p class="mt-2 mb-2">Here's the final ranking based on multi-factor analysis:</p>
+            <ol class="mb-2">
+                <li><strong>Nafees Ahamed K</strong> - 94% (Tech: 96%, Experience: 92%, Culture: 94%)</li>
+                <li><strong>Priya Sharma</strong> - 93% (Tech: 98%, Experience: 90%, Culture: 91%)</li>
+                <li><strong>Ahmed Al-Rashid</strong> - 91% (Tech: 94%, Experience: 88%, Culture: 92%)</li>
+                <li><strong>Sarah Johnson</strong> - 88% (Tech: 85%, Experience: 95%, Culture: 85%)</li>
+                <li><strong>Mohammed Ali</strong> - 87% (Tech: 90%, Experience: 84%, Culture: 88%)</li>
+            </ol>
+            <p class="mb-1"><strong>Key Insights:</strong></p>
+            <ul class="mb-0">
+                <li>Top 3 are significantly above others (>90%)</li>
+                <li>All top 5 meet minimum requirements</li>
+                <li>Consider interviewing top 5 for best ROI</li>
+            </ul>
+            <p class="mt-2 mb-0"><em>Should I re-order your candidate list by this ranking?</em></p>
+        `);
+        showToast('✓ Candidates ranked by AI');
+    }, 2500);
+}
+
+// AI Generate JD
+function aiGenerateJD() {
+    showAIProcessing('Generating professional JD...', 'Analyzing industry standards and requirements');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>📝 Job Description Generated!</strong>
+            <p class="mt-2 mb-2">I've created a comprehensive JD based on your requirements:</p>
+            <div class="bg-light p-3 rounded mt-2">
+                <strong>Electronics Engineer (REQ-2025-EE-001)</strong><br>
+                <strong>Location:</strong> Dubai, UAE<br>
+                <strong>Experience:</strong> 3-5 years<br><br>
+                <strong>Key Responsibilities:</strong>
+                <ul class="mb-2" style="font-size: 0.9rem;">
+                    <li>Design and develop PCB circuits for IoT devices</li>
+                    <li>Work on embedded systems programming (C/C++)</li>
+                    <li>Conduct testing and troubleshooting of electronic systems</li>
+                    <li>Collaborate with cross-functional teams on product development</li>
+                </ul>
+                <strong>Requirements:</strong>
+                <ul class="mb-0" style="font-size: 0.9rem;">
+                    <li>Bachelor's degree in Electronics Engineering</li>
+                    <li>3+ years experience in PCB design and embedded systems</li>
+                    <li>Proficiency in CAD tools (Altium, Eagle)</li>
+                    <li>Strong problem-solving and analytical skills</li>
+                </ul>
+            </div>
+            <p class="mt-2 mb-0"><em>Should I send this to the hiring manager for approval?</em></p>
+        `);
+        showToast('✓ JD generated by AI');
+    }, 2000);
+}
+
+// AI Draft Emails
+function aiDraftEmails(context = '') {
+    showAIProcessing('Drafting personalized emails...', 'Creating professional, engaging content');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>✉️ Email Drafts Ready!</strong>
+            <p class="mt-2 mb-2">I've prepared 3 email templates for you:</p>
+
+            <details class="mb-2">
+                <summary><strong>1. Screening Package Email (for shortlisted candidates)</strong></summary>
+                <div class="bg-light p-2 rounded mt-2" style="font-size: 0.85rem;">
+                    <strong>Subject:</strong> Next Steps - Electronics Engineer Position<br><br>
+                    Dear [Candidate Name],<br><br>
+                    Thank you for your interest in the Electronics Engineer position at [Company]. We were impressed with your background in PCB design and embedded systems.<br><br>
+                    To move forward, please complete the following by [Date]:<br>
+                    1. Candidate Information Form (attached)<br>
+                    2. Soft Skills Assessment (link)<br>
+                    3. Technical Assessment (link)<br><br>
+                    Looking forward to learning more about you!<br><br>
+                    Best regards,<br>[Your Name]
+                </div>
+            </details>
+
+            <details class="mb-2">
+                <summary><strong>2. Interview Invitation Email</strong></summary>
+                <div class="bg-light p-2 rounded mt-2" style="font-size: 0.85rem;">
+                    <strong>Subject:</strong> Interview Invitation - Electronics Engineer<br><br>
+                    [Personalized interview invitation content...]
+                </div>
+            </details>
+
+            <details>
+                <summary><strong>3. Rejection Email (Respectful & Encouraging)</strong></summary>
+                <div class="bg-light p-2 rounded mt-2" style="font-size: 0.85rem;">
+                    <strong>Subject:</strong> Update on Your Application<br><br>
+                    [Thoughtful rejection content...]
+                </div>
+            </details>
+
+            <p class="mt-2 mb-0"><em>Want me to send these to the candidates automatically?</em></p>
+        `);
+    }, 2000);
+}
+
+// AI Generate Interview Questions
+function aiGenerateInterviewQuestions() {
+    showAIProcessing('Generating tailored interview questions...', 'Based on candidate background and role requirements');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>💬 Interview Questions Generated!</strong>
+            <p class="mt-2 mb-2">I've created a comprehensive question set for Electronics Engineer interviews:</p>
+
+            <p class="mb-1"><strong>Technical Questions (15):</strong></p>
+            <ol style="font-size: 0.9rem;">
+                <li>Describe your experience with PCB design. What tools have you used?</li>
+                <li>Explain the process you follow for embedded systems development.</li>
+                <li>How do you approach debugging complex electronic circuits?</li>
+                <li>What's your experience with IoT device development?</li>
+                <li>Can you explain a challenging project you've worked on?</li>
+            </ol>
+
+            <p class="mb-1 mt-2"><strong>Behavioral Questions (10):</strong></p>
+            <ol style="font-size: 0.9rem;">
+                <li>Tell me about a time you had to meet a tight deadline.</li>
+                <li>How do you handle disagreements with team members?</li>
+                <li>Describe a project where you had to learn something new quickly.</li>
+            </ol>
+
+            <p class="mb-1 mt-2"><strong>Candidate-Specific Questions (for Nafees Ahamed K):</strong></p>
+            <ul style="font-size: 0.9rem;" class="mb-0">
+                <li>I see you have limited IoT exposure - how comfortable would you be learning this quickly?</li>
+                <li>Your salary expectations are 15% above our budget - is there flexibility here?</li>
+            </ul>
+
+            <p class="mt-2 mb-0"><em>Should I create a downloadable interview guide?</em></p>
+        `);
+        showToast('✓ Interview questions generated');
+    }, 2500);
+}
+
+// AI Research Candidate
+function aiResearchCandidate(candidateId = 1) {
+    showAIProcessing('Deep-diving into candidate background...', 'Searching LinkedIn, company websites, publications');
+
+    setTimeout(() => {
+        hideAIProcessing();
+        addAIMessage('assistant', `
+            <strong>🔬 Candidate Research Complete!</strong>
+            <p class="mt-2 mb-2"><strong>Nafees Ahamed K - Deep Dive Analysis:</strong></p>
+
+            <p class="mb-1"><strong>Professional Background:</strong></p>
+            <ul style="font-size: 0.9rem;">
+                <li>Currently at Tech Corp Dubai (2.5 years) - Electronics Engineer</li>
+                <li>Previous: Embedded Systems Developer at Innovation Labs (1 year)</li>
+                <li>Education: B.Eng Electronics, University of Dubai (2019, 3.7 GPA)</li>
+            </ul>
+
+            <p class="mb-1 mt-2"><strong>Skills Verification:</strong></p>
+            <ul style="font-size: 0.9rem;">
+                <li>✓ PCB Design: Confirmed expert level (multiple projects on GitHub)</li>
+                <li>✓ Embedded Systems: Advanced C/C++ skills verified</li>
+                <li>⚠️ IoT: Limited exposure (only 1 project mentioned)</li>
+                <li>✓ Team Leadership: Led 2 junior engineers</li>
+            </ul>
+
+            <p class="mb-1 mt-2"><strong>Red Flags / Concerns:</strong></p>
+            <ul style="font-size: 0.9rem;">
+                <li>🟢 No employment gaps found</li>
+                <li>🟡 Average job tenure: 1.5 years (slightly short)</li>
+                <li>🟢 Strong LinkedIn recommendations (3 from managers)</li>
+                <li>🟢 Active in tech community (published 2 articles)</li>
+            </ul>
+
+            <p class="mb-1 mt-2"><strong>Salary Benchmarking:</strong></p>
+            <p style="font-size: 0.9rem;" class="mb-2">Market rate for 3.5 years experience: AED 14k-17k. Candidate expects 18k (slightly above but negotiable).</p>
+
+            <p class="mb-0"><strong>AI Recommendation:</strong> <span class="badge bg-success">Strong Proceed</span> - High potential, minor IoT skill gap easily addressable through training.</p>
+        `);
+        showToast('✓ Deep research completed');
+    }, 3000);
+}
+
+// AI Enable Autopilot
+function aiEnableAutopilot() {
+    if (confirm('Enable AI Autopilot Mode? This will:\n\n• Auto-score new candidates\n• Auto-send screening packages\n• Auto-remind on delays\n• Auto-generate emails\n• Notify you of critical decisions\n\nProceed?')) {
+        showAIProcessing('Enabling AI Autopilot...', 'Setting up automation rules');
+
+        setTimeout(() => {
+            hideAIProcessing();
+            addAIMessage('assistant', `
+                <strong>✈️ AI Autopilot Enabled!</strong>
+                <p class="mt-2 mb-2">I'm now running in autopilot mode. Here's what I'll do automatically:</p>
+                <ul>
+                    <li>✓ Score all new candidate CVs within 5 minutes of application</li>
+                    <li>✓ Auto-shortlist candidates with 85%+ scores</li>
+                    <li>✓ Send screening packages to shortlisted candidates</li>
+                    <li>✓ Set 48h reminders for all screening packages</li>
+                    <li>✓ Auto-remind managers on pending JDs (daily)</li>
+                    <li>✓ Alert you when candidates complete assessments</li>
+                    <li>✓ Flag candidates idle for 48+ hours</li>
+                    <li>✓ Generate weekly summary reports</li>
+                </ul>
+                <p class="mb-0"><em>I'll notify you before making critical decisions. You're still in control!</em></p>
+            `);
+            showToast('✈️ AI Autopilot Mode: ACTIVE');
+            document.querySelector('.ai-badge').textContent = 'AUTO';
+        }, 2000);
+    }
+}
+
+// AI Suggestion Click Handler
+function aiSuggestion(id) {
+    switch(id) {
+        case 1:
+            aiQuickAction('source');
+            break;
+        case 2:
+            aiQuickAction('score');
+            break;
+        case 3:
+            aiQuickAction('jd');
+            break;
+    }
+}
+
+// Show AI Processing Overlay
+function showAIProcessing(mainText, subText) {
+    document.getElementById('aiProcessingText').textContent = mainText;
+    document.getElementById('aiProcessingSubtext').textContent = subText;
+    document.getElementById('aiProcessing').style.display = 'block';
+}
+
+// Hide AI Processing Overlay
+function hideAIProcessing() {
+    document.getElementById('aiProcessing').style.display = 'none';
+}
+
+// Add 'A' keyboard shortcut for AI
+document.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === 'a' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        openAIAssistant();
+    }
+});
+
+// Toggle dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    showToast('🌙 Dark mode toggled');
+}
+
+// ===== PASS MANAGEMENT SYSTEM =====
+let passDatabase = [];
+let passCounter = 1234;
+
+// Generate unique pass reference
+function generatePassReference(type) {
+    const year = new Date().getFullYear();
+    const typeCode = {
+        'screening': 'SCR',
+        'candidate': 'CAN',
+        'onboarding': 'ONB',
+        'interview': 'INT',
+        'assessment': 'ASS'
+    }[type] || 'GEN';
+
+    passCounter++;
+    return `PASS-${year}-${typeCode}-${String(passCounter).padStart(6, '0')}`;
+}
+
+// Open Pass Generation Modal
+function openPassModal(candidateId = null) {
+    document.getElementById('passGenerationModal').style.display = 'flex';
+
+    // Pre-fill if called from candidate card
+    if (candidateId) {
+        // Auto-populate from candidate data
+        document.getElementById('passCandidate').value = 'Nafees Ahamed K';
+        document.getElementById('passPosition').value = 'Electronics Engineer (REQ-2025-EE-001)';
+    }
+}
+
+// Close Pass Modal
+function closePassModal() {
+    document.getElementById('passGenerationModal').style.display = 'none';
+    resetPassForm();
+}
+
+// Generate Pass
+function generatePass() {
+    const passType = document.getElementById('passType').value;
+    const candidate = document.getElementById('passCandidate').value;
+    const position = document.getElementById('passPosition').value;
+    const expiry = document.getElementById('passExpiry').value;
+    const accessLevel = document.getElementById('passAccessLevel').value;
+
+    // Generate unique reference
+    const passReference = generatePassReference(passType);
+
+    // Generate hidden backend URL (never shown to user)
+    const backendURL = `https://secure.hrpass.internal/${btoa(passReference)}/${Date.now()}`;
+
+    // Create pass object
+    const passObj = {
+        reference: passReference,
+        backendURL: backendURL, // Hidden from user!
+        type: passType,
+        candidate: candidate,
+        position: position,
+        expiry: expiry,
+        accessLevel: accessLevel,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        accessCount: 0
+    };
+
+    // Save to database
+    passDatabase.push(passObj);
+
+    // Show success view
+    document.getElementById('passForm').style.display = 'none';
+    document.getElementById('passGenerated').style.display = 'block';
+
+    // Update display
+    document.getElementById('generatedPassReference').textContent = passReference;
+    document.getElementById('passExpiryDisplay').textContent = new Date(expiry).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    // Auto-send if checked
+    if (document.getElementById('autoEmail').checked) {
+        sendPassEmail(passObj);
+    }
+
+    showToast('✅ Pass generated successfully!');
+}
+
+// Send Pass Email (simulated)
+function sendPassEmail(passObj) {
+    setTimeout(() => {
+        showToast(`📧 Pass sent to ${passObj.candidate}`);
+    }, 500);
+}
+
+// Reset Pass Form
+function resetPassForm() {
+    document.getElementById('passForm').style.display = 'block';
+    document.getElementById('passGenerated').style.display = 'none';
+    document.getElementById('passCandidate').value = '';
+    document.getElementById('passPosition').value = '';
+}
+
+// Copy Pass Reference
+function copyPassReference() {
+    const reference = document.getElementById('generatedPassReference').textContent;
+    navigator.clipboard.writeText(reference).then(() => {
+        showToast('📋 Pass reference copied!');
+    });
+}
+
+// View Pass Details
+function viewPassDetails() {
+    const reference = document.getElementById('generatedPassReference').textContent;
+    showToast(`Opening details for ${reference}...`);
+    // Would open detailed view modal here
+}
+
+// ===== SECRET ADMIN PANEL =====
+let adminKeyCombo = [];
+
+// Secret keyboard combo to access admin (Ctrl+Shift+Alt+A)
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
+        e.preventDefault();
+        openAdminPanel();
+    }
+});
+
+// Open Admin Panel
+function openAdminPanel() {
+    document.getElementById('secretAdminPanel').style.display = 'block';
+    showToast('🔐 Admin panel accessed');
+}
+
+// Close Admin Panel
+function closeAdminPanel() {
+    document.getElementById('secretAdminPanel').style.display = 'none';
+}
+
+// Admin Functions
+function openTemplateBuilder() {
+    document.getElementById('templateBuilderModal').style.display = 'flex';
+    closeAdminPanel();
+}
+
+function closeTemplateBuilder() {
+    document.getElementById('templateBuilderModal').style.display = 'none';
+}
+
+function viewAllPasses() {
+    showToast(`Viewing ${passDatabase.length} passes in system`);
+    console.table(passDatabase);
+    alert(`Total Passes: ${passDatabase.length}\n\nCheck console for full list`);
+}
+
+function viewPassAnalytics() {
+    const active = passDatabase.filter(p => p.status === 'active').length;
+    const expired = passDatabase.filter(p => p.status === 'expired').length;
+    alert(`📊 Pass Analytics\n\nTotal: ${passDatabase.length}\nActive: ${active}\nExpired: ${expired}\nConversion Rate: 76%`);
+}
+
+function bulkPassActions() {
+    showToast('⚡ Opening bulk operations panel...');
+}
+
+function viewCandidateDB() {
+    showToast('🗄️ Opening candidate database...');
+}
+
+function viewPassDB() {
+    console.table(passDatabase);
+    showToast(`📋 Pass DB (${passDatabase.length} entries) - Check console`);
+}
+
+function viewTemplateDB() {
+    showToast('📑 Opening template database...');
+}
+
+function backupDatabase() {
+    const backup = JSON.stringify(passDatabase, null, 2);
+    console.log('Database Backup:', backup);
+    showToast('💾 Database backed up to console');
+}
+
+function revokePass() {
+    const ref = prompt('Enter pass reference to revoke:');
+    if (ref) {
+        const pass = passDatabase.find(p => p.reference === ref);
+        if (pass) {
+            pass.status = 'revoked';
+            showToast(`🚫 Pass ${ref} revoked`);
+        } else {
+            showToast('❌ Pass not found');
+        }
+    }
+}
+
+function blockIP() {
+    const ip = prompt('Enter IP address to block:');
+    if (ip) {
+        showToast(`🔒 IP ${ip} blocked`);
+    }
+}
+
+function viewAccessLogs() {
+    showToast('📜 Opening access logs...');
+}
+
+function generateSecurityReport() {
+    showToast('📊 Generating security report...');
+}
+
+// ===== TEMPLATE BUILDER =====
+let draggedComponent = null;
+
+// Drag and Drop Functions
+function allowDrop(ev) {
+    ev.preventDefault();
+    document.getElementById('templateCanvas').classList.add('dragover');
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    document.getElementById('templateCanvas').classList.remove('dragover');
+
+    if (draggedComponent) {
+        const componentType = draggedComponent.dataset.component;
+        addComponentToCanvas(componentType);
+        showToast(`✓ Added ${componentType} component`);
+    }
+}
+
+// Add component to canvas
+function addComponentToCanvas(type) {
+    const canvas = document.getElementById('templateCanvas');
+    const componentHTML = `
+        <div class="card p-3 mb-3" style="border: 2px solid #667eea;">
+            <strong>📝 ${type.toUpperCase()} Component</strong>
+            <p class="mb-0 text-muted">Configure in properties panel →</p>
+        </div>
+    `;
+    canvas.insertAdjacentHTML('beforeend', componentHTML);
+}
+
+// Initialize drag handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const draggables = document.querySelectorAll('.draggable-component');
+    draggables.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            draggedComponent = e.target;
+        });
+
+        item.addEventListener('dragend', function(e) {
+            draggedComponent = null;
+            document.getElementById('templateCanvas').classList.remove('dragover');
+        });
+    });
+});
+
+// Add Generate Pass buttons to candidate cards
+document.addEventListener('DOMContentLoaded', function() {
+    // Add pass generation button to shortlist combo
+    const shortlistButtons = document.querySelectorAll('.combo-btn');
+    // Note: In production, add onclick="openPassModal(candidateId)" to appropriate buttons
+});
+
+// Export pass data (for backup/analysis)
+function exportPassData() {
+    const dataStr = JSON.stringify(passDatabase, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'pass-database-backup.json';
+    link.click();
+    showToast('📥 Pass data exported');
+}
+
+console.log('🎫 Pass Management System initialized');
+console.log('🔐 Access Admin Panel: Press Ctrl+Shift+Alt+X');
+console.log('💡 Total Passes Generated:', passDatabase.length);
+</script>
+</body>
+</html>
