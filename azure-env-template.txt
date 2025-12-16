@@ -1,0 +1,85 @@
+# ============================================
+# Azure Environment Variables Template
+# Pass Manager - HR Screening Application
+# ============================================
+#
+# This file contains template environment variables
+# for Azure deployment. Copy this file and fill in
+# your actual values.
+#
+# IMPORTANT: Never commit actual secret values!
+#
+# ============================================
+
+# ============================================
+# AZURE STATIC WEB APPS
+# ============================================
+
+# Deployment token for GitHub Actions
+# Get this from: az staticwebapp secrets list --name <app-name> --resource-group <rg-name>
+AZURE_STATIC_WEB_APPS_API_TOKEN=<your-deployment-token>
+
+# Static Web App name
+AZURE_STATIC_WEB_APP_NAME=passmanager-portal-frontend
+
+# Resource group name
+AZURE_RESOURCE_GROUP=rg-passmanager-portal
+
+# Azure region
+AZURE_LOCATION=uaenorth
+
+# ============================================
+# APPLICATION URLS (Auto-generated)
+# ============================================
+
+# Frontend URL (filled in after provisioning)
+FRONTEND_URL=https://<your-app-name>.azurestaticapps.net
+
+# ============================================
+# OPTIONAL: CUSTOM DOMAIN
+# ============================================
+
+# Custom domain (if configured)
+CUSTOM_DOMAIN=
+
+# ============================================
+# OPTIONAL: BACKEND CONFIGURATION
+# (For future backend implementation)
+# ============================================
+
+# If you add a backend API later, add these:
+
+# PostgreSQL connection string
+# DATABASE_URL=postgresql://user:password@host:5432/database?sslmode=require
+
+# API URL
+# API_URL=https://<backend-app>.azurewebsites.net
+
+# ============================================
+# GITHUB SECRETS REFERENCE
+# ============================================
+#
+# Add these secrets to GitHub repository:
+# Repository → Settings → Secrets → Actions
+#
+# Required:
+# - AZURE_STATIC_WEB_APPS_API_TOKEN
+#
+# Optional (for backend):
+# - DATABASE_URL
+# - AZURE_WEBAPP_PUBLISH_PROFILE
+#
+# ============================================
+
+# ============================================
+# LOCAL DEVELOPMENT
+# ============================================
+
+# For local development, no special environment
+# variables are needed since this is a static
+# HTML application.
+#
+# Simply open index.html in a browser, or use:
+# npx serve .
+#
+# ============================================
